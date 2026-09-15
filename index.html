@@ -1,657 +1,203 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  <title>周末城市探索 · 雏形</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-    }
-
-    body {
-      background: #f7f9fc;
-      padding: 1rem 1rem 2.5rem;
-      color: #1e2b3c;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .app-container {
-      max-width: 600px;
-      margin: 0 auto;
-      width: 100%;
-    }
-
-    /* ---------- 弹窗样式 ---------- */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(10, 25, 45, 0.45);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1.2rem;
-      z-index: 999;
-      opacity: 1;
-      transition: opacity 0.25s ease;
-    }
-
-    .modal-overlay.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .modal-card {
-      background: #ffffff;
-      border-radius: 32px;
-      width: 100%;
-      max-width: 420px;
-      padding: 1.8rem 1.5rem 1.5rem;
-      box-shadow: 0 30px 60px -20px rgba(0, 20, 45, 0.35), 0 8px 24px -8px rgba(0, 0, 0, 0.1);
-      animation: modalPop 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2);
-    }
-
-    @keyframes modalPop {
-      0% { transform: scale(0.92) translateY(10px); opacity: 0; }
-      100% { transform: scale(1) translateY(0); opacity: 1; }
-    }
-
-    .modal-step { display: none; }
-    .modal-step.active { display: block; }
-
-    .modal-icon { font-size: 2.2rem; text-align: center; margin-bottom: 0.5rem; }
-    .modal-title { font-size: 1.3rem; font-weight: 700; text-align: center; color: #0a1a2b; margin-bottom: 0.3rem; }
-    .modal-sub { font-size: 0.82rem; text-align: center; color: #5d7a97; margin-bottom: 1.4rem; }
-
-    .option-list { display: flex; flex-direction: column; gap: 0.65rem; margin-bottom: 1.2rem; }
-
-    .option-item {
-      background: #f4f9ff;
-      border: 1.5px solid #dde9f5;
-      border-radius: 18px;
-      padding: 0.85rem 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      font-size: 0.92rem;
-      font-weight: 500;
-      color: #1d3b5a;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      user-select: none;
-    }
-
-    .option-item:hover { background: #eaf3fe; border-color: #b9d2ea; }
-    .option-item.selected { background: #1e3a5f; border-color: #1e3a5f; color: #ffffff; box-shadow: 0 6px 14px -6px rgba(20, 55, 95, 0.4); }
-    .option-item .opt-emoji { font-size: 1.3rem; line-height: 1; }
-    .option-item .opt-check { margin-left: auto; font-size: 0.85rem; opacity: 0; transition: opacity 0.1s; }
-    .option-item.selected .opt-check { opacity: 1; }
-
-    .budget-slider-wrap { margin: 0.6rem 0 1.2rem; }
-    .budget-value { font-size: 1.5rem; font-weight: 700; text-align: center; color: #1e3a5f; margin-bottom: 0.4rem; }
-    .budget-value small { font-size: 0.8rem; font-weight: 500; color: #5d7a97; }
-
-    input[type="range"] {
-      width: 100%; height: 6px; border-radius: 6px; background: #dde9f5;
-      outline: none; -webkit-appearance: none; appearance: none;
-    }
-    input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none; appearance: none; width: 22px; height: 22px;
-      border-radius: 50%; background: #1e3a5f; cursor: pointer;
-      border: 3px solid white; box-shadow: 0 2px 8px rgba(0, 30, 60, 0.3);
-    }
-    input[type="range"]::-moz-range-thumb {
-      width: 22px; height: 22px; border-radius: 50%; background: #1e3a5f;
-      cursor: pointer; border: 3px solid white;
-    }
-    .budget-labels { display: flex; justify-content: space-between; font-size: 0.7rem; color: #7c94ab; margin-top: 0.35rem; }
-
-    .people-row { display: flex; gap: 0.5rem; margin-bottom: 1.2rem; }
-    .people-chip {
-      flex: 1; text-align: center; background: #f4f9ff; border: 1.5px solid #dde9f5;
-      border-radius: 16px; padding: 0.7rem 0.3rem; font-size: 0.82rem;
-      font-weight: 500; color: #1d3b5a; cursor: pointer; transition: all 0.15s ease; user-select: none;
-    }
-    .people-chip.selected { background: #1e3a5f; border-color: #1e3a5f; color: white; }
-
-    .modal-actions { display: flex; gap: 0.6rem; margin-top: 0.4rem; }
-    .btn-primary {
-      flex: 1; background: #1e3a5f; color: white; border: none; border-radius: 40px;
-      padding: 0.85rem 1rem; font-size: 0.95rem; font-weight: 600; cursor: pointer;
-      transition: all 0.15s ease; box-shadow: 0 8px 18px -8px rgba(20, 55, 95, 0.5);
-    }
-    .btn-primary:hover { background: #112b44; transform: translateY(-1px); }
-    .btn-ghost { background: transparent; border: none; color: #5d7a97; font-size: 0.82rem; font-weight: 500; cursor: pointer; padding: 0.5rem 1rem; border-radius: 40px; }
-    .btn-ghost:hover { background: #eef4fb; }
-
-    .step-dots { display: flex; justify-content: center; gap: 0.4rem; margin-bottom: 1.1rem; }
-    .dot { width: 7px; height: 7px; border-radius: 50%; background: #d6e2ef; transition: all 0.2s; }
-    .dot.active { background: #1e3a5f; width: 20px; border-radius: 10px; }
-    .skip-row { text-align: center; margin-top: 0.6rem; }
-
-    /* ---------- 原有样式 ---------- */
-    .hero { margin-bottom: 1.75rem; padding: 0.25rem 0; }
-    .hero h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.02em; display: flex; align-items: center; gap: 0.5rem; color: #0a1a2b; }
-    .hero h1 span { background: #e6edf6; border-radius: 100px; font-size: 1rem; font-weight: 500; padding: 0.2rem 0.8rem; color: #2b4c6e; }
-    .subhead { font-size: 0.95rem; color: #4a5e72; margin-top: 0.35rem; display: flex; gap: 0.75rem; flex-wrap: wrap; }
-    .subhead .weather-badge { background: #d9e6f2; border-radius: 30px; padding: 0.2rem 0.8rem; font-size: 0.8rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.3rem; color: #1b3a5c; }
-
-    .recommend-card {
-      background: linear-gradient(135deg, #ffffff 0%, #f3f8ff 100%);
-      border-radius: 32px; padding: 1.5rem 1.25rem; margin-bottom: 1.75rem;
-      box-shadow: 0 12px 28px -8px rgba(0, 30, 60, 0.12), 0 4px 12px rgba(0, 0, 0, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.8);
-    }
-
-    .recommend-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; }
-    .recommend-header h2 { font-size: 1.25rem; font-weight: 600; display: flex; align-items: center; gap: 0.4rem; }
-    .pill { background: #0d2d4b; color: white; border-radius: 40px; font-size: 0.7rem; font-weight: 500; padding: 0.2rem 0.7rem; }
-
-    .pref-row { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 1rem 0 1.25rem; }
-    .pref-chip {
-      background: white; border: 1px solid #cfdeed; border-radius: 40px; padding: 0.45rem 1rem;
-      font-size: 0.85rem; font-weight: 500; color: #1f3a57; display: flex; align-items: center;
-      gap: 0.3rem; transition: all 0.15s ease; cursor: pointer; user-select: none;
-    }
-    .pref-chip.active { background: #1e3a5f; border-color: #1e3a5f; color: white; }
-    .pref-chip i { font-style: normal; font-size: 1rem; }
-
-    .activity-list { display: flex; flex-direction: column; gap: 0.85rem; }
-    .activity-item {
-      background: white; border-radius: 20px; padding: 1rem 1.1rem;
-      display: flex; align-items: center; gap: 0.9rem;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02); border: 1px solid #e2eaf3;
-    }
-    .activity-icon { width: 48px; height: 48px; background: #e9f0f9; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; flex-shrink: 0; }
-    .activity-info { flex: 1; }
-    .activity-title { font-weight: 600; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.2rem; }
-    .activity-meta { display: flex; flex-wrap: wrap; gap: 0.7rem; font-size: 0.75rem; color: #4e6f8f; align-items: center; }
-    .activity-meta span { display: flex; align-items: center; gap: 0.2rem; }
-    .budget-tag { background: #e1f0e8; border-radius: 30px; padding: 0.15rem 0.6rem; font-size: 0.7rem; font-weight: 500; color: #146b3a; }
-    .budget-tag.free { background: #d9f0e1; color: #0b5e2e; }
-    .budget-tag.low { background: #e6f0fa; color: #1f6390; }
-
-    .join-btn {
-      background: #1e3a5f; border: none; border-radius: 40px; padding: 0.5rem 1rem;
-      color: white; font-weight: 500; font-size: 0.75rem; display: flex; align-items: center;
-      gap: 0.25rem; cursor: pointer; white-space: nowrap;
-    }
-    .join-btn.joined { background: #2e7d5e; pointer-events: none; opacity: 0.9; }
-
-    .team-section { margin: 1.5rem 0 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
-    .team-card { background: #ffffff; border-radius: 24px; padding: 1rem 0.9rem; border: 1px solid #dde7f0; }
-    .team-card h3 { font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.7rem; color: #1e3a5f; }
-    .team-avatars { display: flex; align-items: center; gap: 0.5rem; }
-    .avatar { width: 32px; height: 32px; border-radius: 100px; background: #cad9e9; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 500; color: #1d3b5a; border: 2px solid white; }
-    .avatar.more { background: #e2eaf3; font-size: 0.7rem; color: #2c4e6e; }
-    .invite-link { font-size: 0.7rem; color: #1f6390; margin-top: 0.6rem; text-decoration: underline; cursor: pointer; }
-    .checkin-badge { display: flex; align-items: center; justify-content: space-between; }
-    .checkin-count { font-size: 1.6rem; font-weight: 700; color: #1e3a5f; line-height: 1; }
-    .checkin-label { font-size: 0.7rem; color: #547190; }
-    .checkin-btn { background: #f0f6fe; border: none; border-radius: 40px; padding: 0.5rem 1rem; font-size: 0.75rem; font-weight: 500; color: #1e3a5f; cursor: pointer; }
-
-    /* ---------- 攻略分享（增强版） ---------- */
-    .share-section {
-      background: #ffffffd9;
-      backdrop-filter: blur(8px);
-      border-radius: 28px;
-      padding: 1.25rem 1.1rem;
-      margin-top: 1.25rem;
-      border: 1px solid #d2e2f0;
-      box-shadow: 0 8px 20px -10px rgba(0, 30, 60, 0.1);
-    }
-
-    .share-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.9rem; }
-    .share-header h3 { font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 0.4rem; }
-    .share-btn { background: none; border: none; color: #1f6390; font-size: 0.75rem; font-weight: 500; display: flex; align-items: center; gap: 0.3rem; cursor: pointer; padding: 0.2rem 0.5rem; border-radius: 40px; }
-    .share-btn:hover { background: #ecf3fa; }
-
-    /* 攻略卡片 */
-    .guide-post {
-      background: #f5faff;
-      border-radius: 22px;
-      padding: 1rem 1rem 0.85rem;
-      margin-bottom: 0.9rem;
-      border-left: 4px solid #1e3a5f;
-    }
-
-    .guide-post-header {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      margin-bottom: 0.6rem;
-    }
-
-    .guide-avatar {
-      width: 34px; height: 34px; border-radius: 100px; background: #1e3a5f;
-      color: white; display: flex; align-items: center; justify-content: center;
-      font-size: 0.85rem; font-weight: 600; flex-shrink: 0;
-    }
-
-    .guide-author { font-size: 0.82rem; font-weight: 600; color: #1d3b5a; }
-    .guide-time { font-size: 0.7rem; color: #7c94ab; margin-left: auto; }
-
-    .guide-content {
-      font-size: 0.85rem;
-      line-height: 1.5;
-      color: #2f4f6f;
-      margin-bottom: 0.7rem;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    /* 用户上传的图片 */
-    .guide-images {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.45rem;
-      margin-bottom: 0.7rem;
-    }
-
-    .guide-image-item {
-      width: 72px;
-      height: 72px;
-      border-radius: 14px;
-      object-fit: cover;
-      border: 1.5px solid white;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      background: #e9f0f9;
-      cursor: pointer;
-    }
-
-    /* 操作栏：点赞、评论数 */
-    .guide-actions {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding-top: 0.5rem;
-      border-top: 1px dashed #d2e2f0;
-    }
-
-    .action-btn {
-      background: none;
-      border: none;
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-      font-size: 0.78rem;
-      font-weight: 500;
-      color: #547190;
-      cursor: pointer;
-      padding: 0.3rem 0.5rem;
-      border-radius: 30px;
-      transition: all 0.12s ease;
-    }
-
-    .action-btn:hover { background: #e4eefa; }
-
-    .action-btn.liked {
-      color: #d43f3f;
-      font-weight: 600;
-    }
-
-    .action-btn.liked .heart-icon {
-      animation: heartPop 0.3s ease;
-    }
-
-    @keyframes heartPop {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.4); }
-      100% { transform: scale(1); }
-    }
-
-    /* 评论区域 */
-    .comments-list {
-      margin-top: 0.8rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.6rem;
-    }
-
-    .comment-item {
-      background: white;
-      border-radius: 16px;
-      padding: 0.65rem 0.8rem;
-      font-size: 0.8rem;
-      border: 1px solid #e4eef8;
-    }
-
-    .comment-header {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      margin-bottom: 0.3rem;
-    }
-
-    .comment-avatar {
-      width: 24px; height: 24px; border-radius: 100px;
-      background: #cad9e9; color: #1d3b5a;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.65rem; font-weight: 600;
-    }
-
-    .comment-author { font-weight: 600; color: #1d3b5a; font-size: 0.75rem; }
-    .comment-time { font-size: 0.65rem; color: #8ca3b9; margin-left: auto; }
-
-    .comment-content {
-      color: #2f4f6f;
-      line-height: 1.45;
-      word-break: break-word;
-      padding-left: 2px;
-    }
-
-    .comment-actions {
-      display: flex;
-      gap: 0.8rem;
-      margin-top: 0.4rem;
-      padding-left: 2px;
-    }
-
-    .comment-action-btn {
-      background: none;
-      border: none;
-      font-size: 0.7rem;
-      color: #6e8aa8;
-      cursor: pointer;
-      padding: 0.15rem 0.3rem;
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-    }
-
-    .comment-action-btn:hover { background: #eef4fb; color: #1f6390; }
-    .comment-action-btn.liked { color: #d43f3f; font-weight: 600; }
-
-    /* 回复列表 */
-    .replies-list {
-      margin-top: 0.5rem;
-      padding-left: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.45rem;
-      border-left: 2px solid #e4eef8;
-    }
-
-    .reply-item {
-      background: #fafdff;
-      border-radius: 12px;
-      padding: 0.5rem 0.65rem;
-      font-size: 0.76rem;
-      border: 1px solid #eaf2fa;
-    }
-
-    .reply-header {
-      display: flex;
-      align-items: center;
-      gap: 0.35rem;
-      margin-bottom: 0.2rem;
-    }
-
-    .reply-avatar {
-      width: 20px; height: 20px; border-radius: 100px;
-      background: #dbe8f5; color: #1d3b5a;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.55rem; font-weight: 600;
-    }
-
-    .reply-author { font-weight: 600; color: #1d3b5a; font-size: 0.72rem; }
-    .reply-time { font-size: 0.6rem; color: #8ca3b9; margin-left: auto; }
-
-    .reply-content {
-      color: #3f5e7c;
-      line-height: 1.4;
-      word-break: break-word;
-      padding-left: 1.6rem;
-    }
-
-    /* 输入区域 */
-    .comment-input-area {
-      margin-top: 0.9rem;
-      display: flex;
-      gap: 0.5rem;
-      align-items: flex-start;
-    }
-
-    .comment-input {
-      flex: 1;
-      border: 1.5px solid #dde9f5;
-      border-radius: 20px;
-      padding: 0.6rem 0.9rem;
-      font-size: 0.8rem;
-      font-family: inherit;
-      color: #1d3b5a;
-      resize: none;
-      outline: none;
-      transition: border-color 0.15s;
-      min-height: 42px;
-      max-height: 100px;
-      line-height: 1.4;
-    }
-
-    .comment-input:focus { border-color: #7ba7d0; }
-    .comment-input::placeholder { color: #9db3c9; }
-
-    .comment-submit-btn {
-      background: #1e3a5f;
-      color: white;
-      border: none;
-      border-radius: 20px;
-      padding: 0.6rem 1rem;
-      font-size: 0.78rem;
-      font-weight: 600;
-      cursor: pointer;
-      flex-shrink: 0;
-      height: 42px;
-    }
-
-    .comment-submit-btn:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
-
-    /* 回复目标提示条 */
-    .reply-target-bar {
-      display: none;
-      background: #eaf3fe;
-      border-radius: 14px;
-      padding: 0.4rem 0.7rem;
-      font-size: 0.72rem;
-      color: #1f6390;
-      margin-top: 0.5rem;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .reply-target-bar.active { display: flex; }
-
-    .reply-target-bar button {
-      background: none;
-      border: none;
-      color: #1f6390;
-      cursor: pointer;
-      font-size: 0.85rem;
-      padding: 0 0.3rem;
-    }
-
-    /* 发布新攻略弹窗 */
-    .post-modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(10, 25, 45, 0.45);
-      backdrop-filter: blur(5px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
-      z-index: 1000;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s;
-    }
-
-    .post-modal-overlay.active {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .post-modal {
-      background: white;
-      border-radius: 28px;
-      width: 100%;
-      max-width: 420px;
-      padding: 1.5rem 1.3rem;
-      max-height: 88vh;
-      overflow-y: auto;
-    }
-
-    .post-modal h3 {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #0a1a2b;
-      margin-bottom: 0.3rem;
-    }
-
-    .post-modal-sub {
-      font-size: 0.78rem;
-      color: #5d7a97;
-      margin-bottom: 1rem;
-    }
-
-    .post-textarea {
-      width: 100%;
-      border: 1.5px solid #dde9f5;
-      border-radius: 18px;
-      padding: 0.8rem 0.9rem;
-      font-size: 0.85rem;
-      font-family: inherit;
-      resize: vertical;
-      min-height: 100px;
-      outline: none;
-      color: #1d3b5a;
-      line-height: 1.5;
-    }
-
-    .post-textarea:focus { border-color: #7ba7d0; }
-
-    .post-image-upload {
-      margin-top: 0.8rem;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      align-items: center;
-    }
-
-    .upload-label {
-      width: 64px;
-      height: 64px;
-      border: 2px dashed #b9d2ea;
-      border-radius: 16px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.65rem;
-      color: #6e8aa8;
-      cursor: pointer;
-      transition: all 0.15s;
-      gap: 0.1rem;
-    }
-
-    .upload-label:hover { background: #f4f9ff; border-color: #7ba7d0; }
-
-    .upload-preview {
-      width: 64px;
-      height: 64px;
-      border-radius: 16px;
-      object-fit: cover;
-      position: relative;
-      border: 1.5px solid #dde9f5;
-    }
-
-    .upload-preview-wrap {
-      position: relative;
-      width: 64px;
-      height: 64px;
-    }
-
-    .upload-remove {
-      position: absolute;
-      top: -6px;
-      right: -6px;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: #d43f3f;
-      color: white;
-      border: 2px solid white;
-      font-size: 0.65rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      line-height: 1;
-    }
-
-    .post-modal-actions {
-      display: flex;
-      gap: 0.6rem;
-      margin-top: 1.2rem;
-    }
-
-    /* 图片查看器 */
-    .image-viewer-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.85);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 2000;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s;
-    }
-
-    .image-viewer-overlay.active {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .image-viewer-overlay img {
-      max-width: 92%;
-      max-height: 85%;
-      border-radius: 12px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-    }
-
-    .footer-note { text-align: center; font-size: 0.7rem; color: #7c94ab; margin-top: 2rem; border-top: 1px solid #d7e2ed; padding-top: 1.2rem; }
-
-    @media (max-width: 400px) {
-      .team-section { grid-template-columns: 1fr; }
-      .modal-card { padding: 1.5rem 1.2rem 1.2rem; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+<title>周末城市探索 · 雏形</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+  body { background:#f7f9fc; padding:1rem 1rem 2.5rem; color:#1e2b3c; min-height:100vh; }
+  .app-container { max-width:600px; margin:0 auto; width:100%; }
+
+  /* ---------- 通用弹窗 ---------- */
+  .overlay {
+    position:fixed; inset:0; background:rgba(10,25,45,0.45);
+    backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+    display:flex; align-items:center; justify-content:center; padding:1.2rem;
+    z-index:999; opacity:1; transition:opacity .25s ease;
+  }
+  .overlay.hidden { opacity:0; pointer-events:none; }
+  .card {
+    background:#fff; border-radius:32px; width:100%; max-width:420px;
+    padding:1.8rem 1.5rem 1.5rem;
+    box-shadow:0 30px 60px -20px rgba(0,20,45,.35), 0 8px 24px -8px rgba(0,0,0,.1);
+    animation:modalPop .32s cubic-bezier(.2,.9,.3,1.15);
+    max-height:90vh; overflow-y:auto;
+  }
+  @keyframes modalPop { 0%{transform:scale(.92) translateY(10px); opacity:0;} 100%{transform:scale(1) translateY(0); opacity:1;} }
+
+  .modal-step { display:none; }
+  .modal-step.active { display:block; }
+  .modal-icon { font-size:2.2rem; text-align:center; margin-bottom:.5rem; }
+  .modal-title { font-size:1.3rem; font-weight:700; text-align:center; color:#0a1a2b; margin-bottom:.3rem; }
+  .modal-sub { font-size:.82rem; text-align:center; color:#5d7a97; margin-bottom:1.3rem; }
+
+  .option-list { display:flex; flex-direction:column; gap:.65rem; margin-bottom:1.2rem; }
+  .option-item {
+    background:#f4f9ff; border:1.5px solid #dde9f5; border-radius:18px;
+    padding:.85rem 1rem; display:flex; align-items:center; gap:.75rem;
+    font-size:.92rem; font-weight:500; color:#1d3b5a; cursor:pointer;
+    transition:all .15s; user-select:none;
+  }
+  .option-item:hover { background:#eaf3fe; }
+  .option-item.selected { background:#1e3a5f; border-color:#1e3a5f; color:#fff; }
+  .option-item .opt-emoji { font-size:1.3rem; }
+  .option-item .opt-check { margin-left:auto; opacity:0; }
+  .option-item.selected .opt-check { opacity:1; }
+
+  .budget-slider-wrap { margin:.6rem 0 1.2rem; }
+  .budget-value { font-size:1.5rem; font-weight:700; text-align:center; color:#1e3a5f; margin-bottom:.4rem; }
+  .budget-value small { font-size:.8rem; font-weight:500; color:#5d7a97; }
+  input[type="range"] { width:100%; height:6px; border-radius:6px; background:#dde9f5; outline:none; -webkit-appearance:none; appearance:none; }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:22px; height:22px; border-radius:50%; background:#1e3a5f; border:3px solid #fff; box-shadow:0 2px 8px rgba(0,30,60,.3); cursor:pointer; }
+  input[type="range"]::-moz-range-thumb { width:22px; height:22px; border-radius:50%; background:#1e3a5f; border:3px solid #fff; cursor:pointer; }
+  .budget-labels { display:flex; justify-content:space-between; font-size:.7rem; color:#7c94ab; margin-top:.35rem; }
+
+  .people-row { display:flex; gap:.5rem; margin-bottom:1.2rem; }
+  .people-chip { flex:1; text-align:center; background:#f4f9ff; border:1.5px solid #dde9f5; border-radius:16px; padding:.7rem .3rem; font-size:.82rem; font-weight:500; color:#1d3b5a; cursor:pointer; user-select:none; }
+  .people-chip.selected { background:#1e3a5f; border-color:#1e3a5f; color:#fff; }
+
+  .modal-actions { display:flex; gap:.6rem; margin-top:.4rem; }
+  .btn-primary { flex:1; background:#1e3a5f; color:#fff; border:none; border-radius:40px; padding:.85rem 1rem; font-size:.95rem; font-weight:600; cursor:pointer; box-shadow:0 8px 18px -8px rgba(20,55,95,.5); }
+  .btn-primary:hover { background:#112b44; }
+  .btn-ghost { background:transparent; border:none; color:#5d7a97; font-size:.82rem; font-weight:500; cursor:pointer; padding:.5rem 1rem; border-radius:40px; }
+  .btn-ghost:hover { background:#eef4fb; }
+
+  .step-dots { display:flex; justify-content:center; gap:.4rem; margin-bottom:1rem; }
+  .dot { width:7px; height:7px; border-radius:50%; background:#d6e2ef; transition:all .2s; }
+  .dot.active { background:#1e3a5f; width:20px; border-radius:10px; }
+  .skip-row { text-align:center; margin-top:.6rem; }
+
+  /* ---------- 主页面 ---------- */
+  .hero { margin-bottom:1.75rem; }
+  .hero h1 { font-size:2rem; font-weight:700; letter-spacing:-.02em; display:flex; align-items:center; gap:.5rem; color:#0a1a2b; }
+  .hero h1 span { background:#e6edf6; border-radius:100px; font-size:1rem; font-weight:500; padding:.2rem .8rem; color:#2b4c6e; }
+  .subhead { font-size:.95rem; color:#4a5e72; margin-top:.35rem; display:flex; gap:.75rem; flex-wrap:wrap; align-items:center; }
+  .weather-badge { background:#d9e6f2; border-radius:30px; padding:.2rem .8rem; font-size:.8rem; font-weight:500; display:inline-flex; align-items:center; gap:.3rem; color:#1b3a5c; }
+
+  .recommend-card { background:linear-gradient(135deg,#fff 0%,#f3f8ff 100%); border-radius:32px; padding:1.5rem 1.25rem; margin-bottom:1.75rem; box-shadow:0 12px 28px -8px rgba(0,30,60,.12); border:1px solid rgba(255,255,255,.8); }
+  .recommend-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.1rem; }
+  .recommend-header h2 { font-size:1.25rem; font-weight:600; display:flex; align-items:center; gap:.4rem; }
+  .pill { background:#0d2d4b; color:#fff; border-radius:40px; font-size:.7rem; font-weight:500; padding:.2rem .7rem; }
+
+  .pref-row { display:flex; flex-wrap:wrap; gap:.6rem; margin:1rem 0 1.2rem; }
+  .pref-chip { background:#fff; border:1px solid #cfdeed; border-radius:40px; padding:.45rem 1rem; font-size:.85rem; font-weight:500; color:#1f3a57; display:flex; align-items:center; gap:.3rem; cursor:pointer; user-select:none; }
+  .pref-chip.active { background:#1e3a5f; border-color:#1e3a5f; color:#fff; }
+  .pref-chip i { font-style:normal; }
+
+  .activity-list { display:flex; flex-direction:column; gap:.85rem; }
+  .activity-item { background:#fff; border-radius:20px; padding:1rem 1.1rem; display:flex; align-items:center; gap:.9rem; border:1px solid #e2eaf3; }
+  .activity-icon { width:48px; height:48px; background:#e9f0f9; border-radius:18px; display:flex; align-items:center; justify-content:center; font-size:1.6rem; flex-shrink:0; }
+  .activity-info { flex:1; }
+  .activity-title { font-weight:600; font-size:1rem; display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; margin-bottom:.2rem; }
+  .activity-meta { display:flex; flex-wrap:wrap; gap:.7rem; font-size:.75rem; color:#4e6f8f; }
+  .budget-tag { background:#e1f0e8; border-radius:30px; padding:.15rem .6rem; font-size:.7rem; font-weight:500; color:#146b3a; }
+  .budget-tag.free { background:#d9f0e1; color:#0b5e2e; }
+  .budget-tag.low { background:#e6f0fa; color:#1f6390; }
+  .join-btn { background:#1e3a5f; border:none; border-radius:40px; padding:.5rem 1rem; color:#fff; font-weight:500; font-size:.75rem; cursor:pointer; white-space:nowrap; }
+  .join-btn.joined { background:#2e7d5e; pointer-events:none; }
+
+  .team-section { margin:1.5rem 0 1rem; display:grid; grid-template-columns:1fr 1fr; gap:.8rem; }
+  .team-card { background:#fff; border-radius:24px; padding:1rem .9rem; border:1px solid #dde7f0; }
+  .team-card h3 { font-size:.9rem; font-weight:600; display:flex; align-items:center; gap:.4rem; margin-bottom:.7rem; color:#1e3a5f; }
+  .team-avatars { display:flex; align-items:center; gap:.5rem; }
+  .avatar { width:32px; height:32px; border-radius:100px; background:#cad9e9; display:flex; align-items:center; justify-content:center; font-size:.85rem; font-weight:500; color:#1d3b5a; border:2px solid #fff; }
+  .avatar.more { background:#e2eaf3; font-size:.7rem; }
+  .invite-link { font-size:.7rem; color:#1f6390; margin-top:.6rem; text-decoration:underline; cursor:pointer; }
+  .checkin-badge { display:flex; align-items:center; justify-content:space-between; }
+  .checkin-count { font-size:1.6rem; font-weight:700; color:#1e3a5f; line-height:1; }
+  .checkin-label { font-size:.7rem; color:#547190; }
+  .checkin-btn { background:#f0f6fe; border:none; border-radius:40px; padding:.5rem 1rem; font-size:.75rem; font-weight:500; color:#1e3a5f; cursor:pointer; }
+
+  /* ---------- 攻略分享 ---------- */
+  .share-section { background:#ffffffd9; backdrop-filter:blur(8px); border-radius:28px; padding:1.25rem 1.1rem; margin-top:1.25rem; border:1px solid #d2e2f0; }
+  .share-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:.9rem; }
+  .share-header h3 { font-size:1rem; font-weight:600; display:flex; align-items:center; gap:.4rem; }
+  .share-btn { background:none; border:none; color:#1f6390; font-size:.75rem; font-weight:500; cursor:pointer; padding:.2rem .5rem; border-radius:40px; }
+  .share-btn:hover { background:#ecf3fa; }
+
+  .guide-post { background:#f5faff; border-radius:22px; padding:1rem 1rem .85rem; margin-bottom:.9rem; border-left:4px solid #1e3a5f; }
+  .guide-post-header { display:flex; align-items:center; gap:.6rem; margin-bottom:.6rem; }
+  .guide-avatar { width:34px; height:34px; border-radius:100px; background:#1e3a5f; color:#fff; display:flex; align-items:center; justify-content:center; font-size:.85rem; font-weight:600; }
+  .guide-author { font-size:.82rem; font-weight:600; color:#1d3b5a; }
+  .guide-time { font-size:.7rem; color:#7c94ab; margin-left:auto; }
+  .guide-content { font-size:.85rem; line-height:1.5; color:#2f4f6f; margin-bottom:.7rem; white-space:pre-wrap; word-break:break-word; }
+  .guide-images { display:flex; flex-wrap:wrap; gap:.45rem; margin-bottom:.7rem; }
+  .guide-image-item { width:72px; height:72px; border-radius:14px; object-fit:cover; border:1.5px solid #fff; box-shadow:0 2px 8px rgba(0,0,0,.08); cursor:pointer; background:#e9f0f9; }
+
+  .guide-actions { display:flex; align-items:center; gap:1rem; padding-top:.5rem; border-top:1px dashed #d2e2f0; }
+  .action-btn { background:none; border:none; display:flex; align-items:center; gap:.3rem; font-size:.78rem; font-weight:500; color:#547190; cursor:pointer; padding:.3rem .5rem; border-radius:30px; }
+  .action-btn:hover { background:#e4eefa; }
+  .action-btn.liked { color:#d43f3f; font-weight:600; }
+
+  .comments-list { margin-top:.8rem; display:flex; flex-direction:column; gap:.6rem; }
+  .comment-item { background:#fff; border-radius:16px; padding:.65rem .8rem; font-size:.8rem; border:1px solid #e4eef8; }
+  .comment-header { display:flex; align-items:center; gap:.4rem; margin-bottom:.3rem; }
+  .comment-avatar { width:24px; height:24px; border-radius:100px; background:#cad9e9; color:#1d3b5a; display:flex; align-items:center; justify-content:center; font-size:.65rem; font-weight:600; }
+  .comment-author { font-weight:600; color:#1d3b5a; font-size:.75rem; }
+  .comment-time { font-size:.65rem; color:#8ca3b9; margin-left:auto; }
+  .comment-content { color:#2f4f6f; line-height:1.45; word-break:break-word; }
+  .comment-actions { display:flex; gap:.8rem; margin-top:.4rem; }
+  .comment-action-btn { background:none; border:none; font-size:.7rem; color:#6e8aa8; cursor:pointer; padding:.15rem .3rem; border-radius:20px; display:flex; align-items:center; gap:.25rem; }
+  .comment-action-btn:hover { background:#eef4fb; color:#1f6390; }
+  .comment-action-btn.liked { color:#d43f3f; font-weight:600; }
+
+  .replies-list { margin-top:.5rem; padding-left:1.5rem; display:flex; flex-direction:column; gap:.45rem; border-left:2px solid #e4eef8; }
+  .reply-item { background:#fafdff; border-radius:12px; padding:.5rem .65rem; font-size:.76rem; border:1px solid #eaf2fa; }
+  .reply-header { display:flex; align-items:center; gap:.35rem; margin-bottom:.2rem; }
+  .reply-avatar { width:20px; height:20px; border-radius:100px; background:#dbe8f5; color:#1d3b5a; display:flex; align-items:center; justify-content:center; font-size:.55rem; font-weight:600; }
+  .reply-author { font-weight:600; color:#1d3b5a; font-size:.72rem; }
+  .reply-time { font-size:.6rem; color:#8ca3b9; margin-left:auto; }
+  .reply-content { color:#3f5e7c; line-height:1.4; word-break:break-word; padding-left:1.6rem; }
+
+  .comment-input-area { margin-top:.9rem; display:flex; gap:.5rem; align-items:flex-start; }
+  .comment-input { flex:1; border:1.5px solid #dde9f5; border-radius:20px; padding:.6rem .9rem; font-size:.8rem; font-family:inherit; color:#1d3b5a; resize:none; outline:none; min-height:42px; max-height:100px; line-height:1.4; }
+  .comment-input:focus { border-color:#7ba7d0; }
+  .comment-submit-btn { background:#1e3a5f; color:#fff; border:none; border-radius:20px; padding:.6rem 1rem; font-size:.78rem; font-weight:600; cursor:pointer; height:42px; }
+  .comment-submit-btn:disabled { opacity:.4; cursor:not-allowed; }
+
+  .reply-target-bar { display:none; background:#eaf3fe; border-radius:14px; padding:.4rem .7rem; font-size:.72rem; color:#1f6390; margin-top:.5rem; align-items:center; justify-content:space-between; }
+  .reply-target-bar.active { display:flex; }
+  .reply-target-bar button { background:none; border:none; color:#1f6390; cursor:pointer; font-size:.9rem; }
+
+  /* 发布攻略弹窗 */
+  .post-modal-overlay { position:fixed; inset:0; background:rgba(10,25,45,.45); backdrop-filter:blur(5px); display:flex; align-items:center; justify-content:center; padding:1rem; z-index:1000; opacity:0; pointer-events:none; transition:opacity .2s; }
+  .post-modal-overlay.active { opacity:1; pointer-events:auto; }
+  .post-modal { background:#fff; border-radius:28px; width:100%; max-width:420px; padding:1.5rem 1.3rem; max-height:88vh; overflow-y:auto; }
+  .post-modal h3 { font-size:1.1rem; font-weight:700; color:#0a1a2b; margin-bottom:.3rem; }
+  .post-modal-sub { font-size:.78rem; color:#5d7a97; margin-bottom:1rem; }
+  .post-textarea { width:100%; border:1.5px solid #dde9f5; border-radius:18px; padding:.8rem .9rem; font-size:.85rem; font-family:inherit; resize:vertical; min-height:100px; outline:none; color:#1d3b5a; line-height:1.5; }
+  .post-textarea:focus { border-color:#7ba7d0; }
+  .post-image-upload { margin-top:.8rem; display:flex; flex-wrap:wrap; gap:.5rem; align-items:center; }
+  .upload-label { width:64px; height:64px; border:2px dashed #b9d2ea; border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:.65rem; color:#6e8aa8; cursor:pointer; }
+  .upload-label:hover { background:#f4f9ff; }
+  .upload-preview-wrap { position:relative; width:64px; height:64px; }
+  .upload-preview { width:64px; height:64px; border-radius:16px; object-fit:cover; border:1.5px solid #dde9f5; }
+  .upload-remove { position:absolute; top:-6px; right:-6px; width:20px; height:20px; border-radius:50%; background:#d43f3f; color:#fff; border:2px solid #fff; font-size:.65rem; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+  .post-modal-actions { display:flex; gap:.6rem; margin-top:1.2rem; }
+
+  /* 图片查看器 */
+  .image-viewer-overlay { position:fixed; inset:0; background:rgba(0,0,0,.85); display:flex; align-items:center; justify-content:center; z-index:2000; opacity:0; pointer-events:none; transition:opacity .2s; }
+  .image-viewer-overlay.active { opacity:1; pointer-events:auto; }
+  .image-viewer-overlay img { max-width:92%; max-height:85%; border-radius:12px; }
+
+  .footer-note { text-align:center; font-size:.7rem; color:#7c94ab; margin-top:2rem; border-top:1px solid #d7e2ed; padding-top:1.2rem; }
+
+  @media (max-width:400px) { .team-section { grid-template-columns:1fr; } }
+</style>
 </head>
 <body>
 
-<!-- ========== 偏好选择测试弹窗 ========== -->
-<div class="modal-overlay" id="prefModal">
-  <div class="modal-card">
+<!-- ========== 偏好测试弹窗 ========== -->
+<div class="overlay" id="prefModal">
+  <div class="card">
     <div class="step-dots" id="stepDots">
       <div class="dot active"></div>
       <div class="dot"></div>
       <div class="dot"></div>
     </div>
 
-    <!-- 第一步：兴趣偏好 -->
+    <!-- 步骤 1 -->
     <div class="modal-step active" data-step="1">
       <div class="modal-icon">🧭</div>
       <div class="modal-title">你更想怎么玩？</div>
@@ -670,7 +216,7 @@
       </div>
     </div>
 
-    <!-- 第二步：预算 -->
+    <!-- 步骤 2 -->
     <div class="modal-step" data-step="2">
       <div class="modal-icon">💰</div>
       <div class="modal-title">周末预算大概多少？</div>
@@ -686,7 +232,7 @@
       </div>
     </div>
 
-    <!-- 第三步：同行人数 -->
+    <!-- 步骤 3 -->
     <div class="modal-step" data-step="3">
       <div class="modal-icon">👥</div>
       <div class="modal-title">和谁一起出发？</div>
@@ -710,14 +256,661 @@
     <h1>🌆 周末探索 <span>雏形</span></h1>
     <div class="subhead">
       <div class="weather-badge">⛅ 22°C · 多云 · 微风</div>
-      <div style="display:flex; gap:0.5rem;" id="heroPrefs">
-        <span id="heroPeople">👥 2-4人同行</span>
-        <span id="heroBudget">💰 ¥0-80</span>
-      </div>
+      <span id="heroPeople">👥 2-4人同行</span>
+      <span id="heroBudget">💰 ¥0-80</span>
     </div>
   </div>
 
   <div class="recommend-card">
     <div class="recommend-header">
       <h2>🎯 为你推荐</h2>
-      <div class="pill" id="matchPill
+      <div class="pill" id="matchPill">智能匹配</div>
+    </div>
+    <div class="pref-row" id="prefRow">
+      <div class="pref-chip active" data-pref="all"><i>✨</i> 全部</div>
+      <div class="pref-chip" data-pref="exhibition"><i>🖼️</i> 展览</div>
+      <div class="pref-chip" data-pref="market"><i>🛍️</i> 市集</div>
+      <div class="pref-chip" data-pref="performance"><i>🎭</i> 演出</div>
+      <div class="pref-chip" data-pref="hiking"><i>🥾</i> 徒步</div>
+    </div>
+    <div class="activity-list" id="activityList"></div>
+  </div>
+
+  <div class="team-section">
+    <div class="team-card">
+      <h3>👋 组队出发</h3>
+      <div class="team-avatars">
+        <div class="avatar">你</div><div class="avatar">小A</div><div class="avatar">小B</div><div class="avatar more">+2</div>
+      </div>
+      <div class="invite-link" id="inviteLink">🔗 邀请同行好友</div>
+    </div>
+    <div class="team-card">
+      <h3>📍 打卡记录</h3>
+      <div class="checkin-badge">
+        <div><div class="checkin-count" id="checkinCount">7</div><div class="checkin-label">已打卡地点</div></div>
+        <button class="checkin-btn" id="checkinBtn">+ 打卡</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 攻略分享 -->
+  <div class="share-section">
+    <div class="share-header">
+      <h3>📝 攻略分享</h3>
+      <button class="share-btn" id="shareGuideBtn">+ 发布攻略</button>
+    </div>
+    <div id="guideFeed"></div>
+  </div>
+
+  <div class="footer-note">
+    根据天气·预算·偏好推荐 · 组队打卡分享<br>点击偏好切换推荐 · 雏形可迭代
+  </div>
+</div>
+
+<!-- 发布攻略弹窗 -->
+<div class="post-modal-overlay" id="postModal">
+  <div class="post-modal">
+    <h3>✍️ 发布新攻略</h3>
+    <div class="post-modal-sub">分享你的周末路线、照片和心得</div>
+    <textarea class="post-textarea" id="postTextarea" placeholder="写下你的周末探索故事..."></textarea>
+    <div class="post-image-upload" id="postImageUpload">
+      <label class="upload-label" for="postImageInput">
+        <span>📷</span>
+        <span>上传图片</span>
+      </label>
+      <input type="file" id="postImageInput" accept="image/*" multiple style="display:none;">
+    </div>
+    <div class="post-modal-actions">
+      <button class="btn-ghost" id="postCancelBtn">取消</button>
+      <button class="btn-primary" id="postSubmitBtn">发布</button>
+    </div>
+  </div>
+</div>
+
+<!-- 图片查看器 -->
+<div class="image-viewer-overlay" id="imageViewer">
+  <img src="" alt="查看图片" id="imageViewerImg">
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ===================== 数据 ===================== */
+  const activities = [
+    { id:1, title:'城市印象·当代艺术展', type:'exhibition', icon:'🖼️', budget:'¥60', budgetTag:'low', people:'2-6人', time:'本周末 10:00-18:00', distance:'1.2km', weather:'室内' },
+    { id:2, title:'滨江创意市集', type:'market', icon:'🛍️', budget:'免费', budgetTag:'free', people:'不限', time:'周六 14:00-21:00', distance:'800m', weather:'户外' },
+    { id:3, title:'Livehouse 独立乐队演出', type:'performance', icon:'🎭', budget:'¥80', budgetTag:'low', people:'1-4人', time:'周六 20:00', distance:'2.5km', weather:'室内' },
+    { id:4, title:'西山轻徒步·落日线', type:'hiking', icon:'🥾', budget:'免费', budgetTag:'free', people:'3-8人', time:'周日 15:00', distance:'5km', weather:'户外' },
+    { id:5, title:'复古胶片摄影展', type:'exhibition', icon:'📸', budget:'¥40', budgetTag:'low', people:'1-3人', time:'本周末全天', distance:'1.8km', weather:'室内' },
+    { id:6, title:'农夫市集·手作烘焙', type:'market', icon:'🥐', budget:'¥30', budgetTag:'low', people:'不限', time:'周六 9:00-14:00', distance:'1.5km', weather:'户外' },
+    { id:7, title:'露天电影之夜', type:'performance', icon:'🎬', budget:'免费', budgetTag:'free', people:'2-8人', time:'周六 19:30', distance:'2.2km', weather:'户外' },
+    { id:8, title:'老城巷子·城市漫步', type:'hiking', icon:'🚶', budget:'免费', budgetTag:'free', people:'1-6人', time:'周日 9:00', distance:'3km', weather:'户外' }
+  ];
+
+  // 攻略帖子数据 (含评论 / 回复)
+  let posts = [
+    {
+      id: 'p1',
+      author: '小A',
+      avatar: 'A',
+      time: '2小时前',
+      content: '「秋日市集漫游」从创意园到滨江步道，下午3点光线绝佳，推荐手工冰淇淋店。人均40元。',
+      images: [],
+      likes: 12,
+      liked: false,
+      comments: [
+        {
+          id: 'c1',
+          author: '小B',
+          avatar: 'B',
+          time: '1小时前',
+          content: '冰淇淋店叫什么名字呀？想去试试！',
+          likes: 3,
+          liked: false,
+          replies: [
+            { id: 'r1', author: '小A', avatar: 'A', time: '40分钟前', content: '叫「甜屿」，在创意园北门进来第二家～' }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'p2',
+      author: '小C',
+      avatar: 'C',
+      time: '昨天',
+      content: '西山徒步路线推荐：从南门上山，人少景美，1.5h到顶，落日超棒！记得带外套。',
+      images: [],
+      likes: 8,
+      liked: false,
+      comments: []
+    }
+  ];
+
+  /* ===================== 状态 ===================== */
+  let currentPref = 'all';
+  let checkinCount = 7;
+  let userInterests = [];
+  let userBudget = 80;
+  let userPeople = '2-4';
+  let replyTarget = null;   // { postId, commentId, authorName }
+
+  /* ===================== DOM ===================== */
+  const $ = (id) => document.getElementById(id);
+
+  const modal = $('prefModal');
+  const stepDots = document.querySelectorAll('.dot');
+  const step1 = document.querySelector('.modal-step[data-step="1"]');
+  const step2 = document.querySelector('.modal-step[data-step="2"]');
+  const step3 = document.querySelector('.modal-step[data-step="3"]');
+  const interestOptions = document.querySelectorAll('#interestOptions .option-item');
+  const budgetRange = $('budgetRange');
+  const budgetValue = $('budgetValue');
+  const peopleChips = document.querySelectorAll('#peopleRow .people-chip');
+  const activityListEl = $('activityList');
+  const prefChips = document.querySelectorAll('.pref-chip');
+  const heroPeople = $('heroPeople');
+  const heroBudget = $('heroBudget');
+  const matchPill = $('matchPill');
+  const guideFeed = $('guideFeed');
+  const checkinCountEl = $('checkinCount');
+  const checkinBtn = $('checkinBtn');
+  const inviteLink = $('inviteLink');
+
+  const postModal = $('postModal');
+  const shareGuideBtn = $('shareGuideBtn');
+  const postTextarea = $('postTextarea');
+  const postImageInput = $('postImageInput');
+  const postImageUpload = $('postImageUpload');
+  const postCancelBtn = $('postCancelBtn');
+  const postSubmitBtn = $('postSubmitBtn');
+
+  const imageViewer = $('imageViewer');
+  const imageViewerImg = $('imageViewerImg');
+
+  let newPostImages = [];  // 新帖待上传图片 base64
+
+  /* ===================== 工具函数 ===================== */
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
+  function nowTimeLabel() {
+    return '刚刚';
+  }
+
+  /* ===================== 弹窗控制 ===================== */
+  function goToStep(n) {
+    [step1, step2, step3].forEach((s, i) => s.classList.toggle('active', i === n - 1));
+    stepDots.forEach((d, i) => d.classList.toggle('active', i === n - 1));
+  }
+
+  // 兴趣选项
+  interestOptions.forEach(opt => {
+    opt.addEventListener('click', () => {
+      opt.classList.toggle('selected');
+      const val = opt.dataset.value;
+      if (userInterests.includes(val)) {
+        userInterests = userInterests.filter(v => v !== val);
+      } else {
+        userInterests.push(val);
+      }
+    });
+  });
+
+  $('step1Next').addEventListener('click', () => goToStep(2));
+  $('step2Back').addEventListener('click', () => goToStep(1));
+  $('step2Next').addEventListener('click', () => { userBudget = parseInt(budgetRange.value, 10); goToStep(3); });
+  $('step3Back').addEventListener('click', () => goToStep(2));
+
+  budgetRange.addEventListener('input', function() {
+    userBudget = parseInt(this.value, 10);
+    budgetValue.innerHTML = userBudget >= 300 ? '¥300+ <small>/ 人</small>' : ('¥' + userBudget + ' <small>/ 人</small>');
+  });
+
+  peopleChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      peopleChips.forEach(c => c.classList.remove('selected'));
+      chip.classList.add('selected');
+      userPeople = chip.dataset.value;
+    });
+  });
+
+  // 完成测试
+  $('finishBtn').addEventListener('click', () => {
+    updateHero();
+    if (userInterests.length > 0) {
+      const first = userInterests[0];
+      prefChips.forEach(c => c.classList.remove('active'));
+      const target = document.querySelector(`.pref-chip[data-pref="${first}"]`);
+      if (target) target.classList.add('active');
+      currentPref = first;
+    } else {
+      prefChips.forEach(c => c.classList.remove('active'));
+      document.querySelector('.pref-chip[data-pref="all"]').classList.add('active');
+      currentPref = 'all';
+    }
+    renderActivities(currentPref);
+    matchPill.textContent = userInterests.length > 0 ? ('✨ 已匹配 ' + userInterests.length + ' 个兴趣') : '智能匹配';
+    modal.classList.add('hidden');
+  });
+
+  // 跳过全部
+  $('skipAllBtn').addEventListener('click', () => {
+    userInterests = [];
+    userBudget = 80;
+    userPeople = '2-4';
+    updateHero();
+    prefChips.forEach(c => c.classList.remove('active'));
+    document.querySelector('.pref-chip[data-pref="all"]').classList.add('active');
+    currentPref = 'all';
+    renderActivities('all');
+    matchPill.textContent = '智能匹配';
+    modal.classList.add('hidden');
+  });
+
+  /* ===================== Hero 更新 ===================== */
+  function updateHero() {
+    if (userPeople === '1') heroPeople.textContent = '👥 1人出发';
+    else if (userPeople === '2-4') heroPeople.textContent = '👥 2-4人同行';
+    else heroPeople.textContent = '👥 5人以上';
+    heroBudget.textContent = userBudget >= 300 ? '💰 ¥300+' : ('💰 ¥0-' + userBudget);
+  }
+
+  /* ===================== 渲染活动 ===================== */
+  function renderActivities(pref) {
+    let filtered = activities;
+    if (pref !== 'all') {
+      filtered = activities.filter(a => a.type === pref);
+    } else if (userInterests.length > 0) {
+      const matched = activities.filter(a => userInterests.includes(a.type));
+      const others = activities.filter(a => !userInterests.includes(a.type));
+      filtered = [...matched, ...others];
+    }
+
+    if (filtered.length === 0) {
+      activityListEl.innerHTML = `<div style="text-align:center;padding:1.5rem;color:#7e97af;font-size:.9rem;">✨ 这个偏好暂时没有推荐，试试其他标签吧</div>`;
+      return;
+    }
+
+    activityListEl.innerHTML = filtered.map(act => {
+      let budgetClass = 'budget-tag';
+      if (act.budget === '免费') budgetClass += ' free';
+      else budgetClass += ' low';
+      const matched = userInterests.includes(act.type);
+      const badge = matched ? '<span style="background:#e1f0e8;color:#146b3a;border-radius:30px;padding:.1rem .5rem;font-size:.65rem;font-weight:600;">✨ 兴趣匹配</span>' : '';
+      return `
+        <div class="activity-item">
+          <div class="activity-icon">${act.icon}</div>
+          <div class="activity-info">
+            <div class="activity-title">${escapeHtml(act.title)} ${badge} <span class="${budgetClass}">${act.budget}</span></div>
+            <div class="activity-meta">
+              <span>⏱️ ${act.time}</span>
+              <span>📍 ${act.distance}</span>
+              <span>👥 ${act.people}</span>
+              <span>🌤️ ${act.weather}</span>
+            </div>
+          </div>
+          <button class="join-btn" data-id="${act.id}">组队</button>
+        </div>`;
+    }).join('');
+
+    document.querySelectorAll('.join-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        if (this.classList.contains('joined')) return;
+        this.classList.add('joined');
+        this.textContent = '✅ 已组队';
+      });
+    });
+  }
+
+  // 偏好 chip
+  prefChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      prefChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      currentPref = chip.dataset.pref;
+      renderActivities(currentPref);
+      matchPill.textContent = (currentPref !== 'all' && userInterests.includes(currentPref)) ? '✨ 兴趣匹配中' : '智能匹配';
+    });
+  });
+
+  /* ===================== 攻略渲染 ===================== */
+  function renderGuideFeed() {
+    if (posts.length === 0) {
+      guideFeed.innerHTML = '<div style="text-align:center;padding:1rem;color:#7e97af;font-size:.8rem;">还没有攻略，点右上角发布第一条吧～</div>';
+      return;
+    }
+    guideFeed.innerHTML = posts.map(post => renderPost(post)).join('');
+    bindGuideEvents();
+  }
+
+  function renderPost(post) {
+    const commentsHtml = post.comments.map(c => renderComment(post.id, c)).join('');
+
+    const imagesHtml = post.images.length
+      ? `<div class="guide-images">${post.images.map(src => `<img class="guide-image-item" src="${src}" data-src="${src}" alt="攻略图片">`).join('')}</div>`
+      : '';
+
+    return `
+      <div class="guide-post" data-post-id="${post.id}">
+        <div class="guide-post-header">
+          <div class="guide-avatar">${escapeHtml(post.avatar)}</div>
+          <div class="guide-author">${escapeHtml(post.author)}</div>
+          <div class="guide-time">${escapeHtml(post.time)}</div>
+        </div>
+        <div class="guide-content">${escapeHtml(post.content)}</div>
+        ${imagesHtml}
+        <div class="guide-actions">
+          <button class="action-btn like-post-btn ${post.liked ? 'liked' : ''}" data-post-id="${post.id}">
+            <span class="heart-icon">${post.liked ? '❤️' : '🤍'}</span> <span class="like-count">${post.likes}</span>
+          </button>
+          <button class="action-btn comment-toggle-btn" data-post-id="${post.id}">💬 评论 ${post.comments.length}</button>
+        </div>
+        <div class="comments-list" data-comments-for="${post.id}">
+          ${commentsHtml}
+        </div>
+        <div class="comment-input-area">
+          <textarea class="comment-input" data-post-id="${post.id}" placeholder="写下你的评论..." rows="1"></textarea>
+          <button class="comment-submit-btn" data-post-id="${post.id}" disabled>发送</button>
+        </div>
+        <div class="reply-target-bar" data-reply-bar-for="${post.id}">
+          <span class="reply-target-text">回复 <b></b></span>
+          <button type="button" class="reply-cancel-btn">✕</button>
+        </div>
+      </div>`;
+  }
+
+  function renderComment(postId, comment) {
+    const repliesHtml = comment.replies && comment.replies.length
+      ? `<div class="replies-list">${comment.replies.map(r => `
+          <div class="reply-item">
+            <div class="reply-header">
+              <div class="reply-avatar">${escapeHtml(r.avatar)}</div>
+              <span class="reply-author">${escapeHtml(r.author)}</span>
+              <span class="reply-time">${escapeHtml(r.time)}</span>
+            </div>
+            <div class="reply-content">${escapeHtml(r.content)}</div>
+          </div>`).join('')}</div>`
+      : '';
+
+    return `
+      <div class="comment-item" data-comment-id="${comment.id}" data-post-id="${postId}">
+        <div class="comment-header">
+          <div class="comment-avatar">${escapeHtml(comment.avatar)}</div>
+          <span class="comment-author">${escapeHtml(comment.author)}</span>
+          <span class="comment-time">${escapeHtml(comment.time)}</span>
+        </div>
+        <div class="comment-content">${escapeHtml(comment.content)}</div>
+        <div class="comment-actions">
+          <button class="comment-action-btn like-comment-btn ${comment.liked ? 'liked' : ''}" data-post-id="${postId}" data-comment-id="${comment.id}">
+            ${comment.liked ? '❤️' : '🤍'} <span>${comment.likes}</span>
+          </button>
+          <button class="comment-action-btn reply-btn" data-post-id="${postId}" data-comment-id="${comment.id}" data-author="${escapeHtml(comment.author)}">↩️ 回复</button>
+        </div>
+        ${repliesHtml}
+      </div>`;
+  }
+
+  /* ===================== 攻略事件绑定 ===================== */
+  function bindGuideEvents() {
+    // 点赞帖子
+    document.querySelectorAll('.like-post-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const postId = this.dataset.postId;
+        const post = posts.find(p => p.id === postId);
+        if (!post) return;
+        post.liked = !post.liked;
+        post.likes += post.liked ? 1 : -1;
+        this.classList.toggle('liked', post.liked);
+        this.querySelector('.heart-icon').textContent = post.liked ? '❤️' : '🤍';
+        this.querySelector('.like-count').textContent = post.likes;
+      });
+    });
+
+    // 评论框输入 => 启用/禁用按钮
+    document.querySelectorAll('.comment-input').forEach(input => {
+      input.addEventListener('input', function() {
+        const postId = this.dataset.postId;
+        const btn = document.querySelector(`.comment-submit-btn[data-post-id="${postId}"]`);
+        if (btn) btn.disabled = this.value.trim().length === 0;
+      });
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          const postId = this.dataset.postId;
+          const btn = document.querySelector(`.comment-submit-btn[data-post-id="${postId}"]`);
+          if (btn && !btn.disabled) btn.click();
+        }
+      });
+    });
+
+    // 提交评论 / 回复
+    document.querySelectorAll('.comment-submit-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const postId = this.dataset.postId;
+        const input = document.querySelector(`.comment-input[data-post-id="${postId}"]`);
+        const text = input.value.trim();
+        if (!text) return;
+
+        const post = posts.find(p => p.id === postId);
+        if (!post) return;
+
+        if (replyTarget && replyTarget.postId === postId) {
+          // 找评论
+          const comment = post.comments.find(c => c.id === replyTarget.commentId);
+          if (comment) {
+            if (!comment.replies) comment.replies = [];
+            comment.replies.push({
+              id: 'r' + Date.now(),
+              author: '你',
+              avatar: '你',
+              time: nowTimeLabel(),
+              content: text
+            });
+          }
+          replyTarget = null;
+          // 隐藏回复条
+          const bar = document.querySelector(`.reply-target-bar[data-reply-bar-for="${postId}"]`);
+          if (bar) bar.classList.remove('active');
+        } else {
+          post.comments.push({
+            id: 'c' + Date.now(),
+            author: '你',
+            avatar: '你',
+            time: nowTimeLabel(),
+            content: text,
+            likes: 0,
+            liked: false,
+            replies: []
+          });
+        }
+
+        input.value = '';
+        this.disabled = true;
+        renderGuideFeed();
+      });
+    });
+
+    // 点赞评论
+    document.querySelectorAll('.like-comment-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const postId = this.dataset.postId;
+        const commentId = this.dataset.commentId;
+        const post = posts.find(p => p.id === postId);
+        if (!post) return;
+        const comment = post.comments.find(c => c.id === commentId);
+        if (!comment) return;
+        comment.liked = !comment.liked;
+        comment.likes += comment.liked ? 1 : -1;
+        this.classList.toggle('liked', comment.liked);
+        this.innerHTML = `${comment.liked ? '❤️' : '🤍'} <span>${comment.likes}</span>`;
+      });
+    });
+
+    // 点击回复 => 显示回复目标条
+    document.querySelectorAll('.reply-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const postId = this.dataset.postId;
+        const commentId = this.dataset.commentId;
+        const author = this.dataset.author;
+
+        // 显示该帖子的回复条
+        document.querySelectorAll('.reply-target-bar').forEach(b => b.classList.remove('active'));
+        const bar = document.querySelector(`.reply-target-bar[data-reply-bar-for="${postId}"]`);
+        if (bar) {
+          bar.classList.add('active');
+          bar.querySelector('b').textContent = author;
+        }
+
+        replyTarget = { postId, commentId, authorName: author };
+
+        // 聚焦输入框
+        const input = document.querySelector(`.comment-input[data-post-id="${postId}"]`);
+        if (input) {
+          input.focus();
+          input.placeholder = `回复 @${author}...`;
+        }
+      });
+    });
+
+    // 取消回复
+    document.querySelectorAll('.reply-cancel-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const bar = this.closest('.reply-target-bar');
+        const postId = bar.dataset.replyBarFor;
+        bar.classList.remove('active');
+        replyTarget = null;
+        const input = document.querySelector(`.comment-input[data-post-id="${postId}"]`);
+        if (input) input.placeholder = '写下你的评论...';
+      });
+    });
+
+    // 评论按钮切换显示评论区 (这里默认都显示，点击只做聚焦)
+    document.querySelectorAll('.comment-toggle-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const postId = this.dataset.postId;
+        const input = document.querySelector(`.comment-input[data-post-id="${postId}"]`);
+        if (input) input.focus();
+      });
+    });
+
+    // 点击图片查看大图
+    document.querySelectorAll('.guide-image-item').forEach(img => {
+      img.addEventListener('click', function() {
+        imageViewerImg.src = this.dataset.src;
+        imageViewer.classList.add('active');
+      });
+    });
+  }
+
+  // 关闭图片查看器
+  imageViewer.addEventListener('click', () => {
+    imageViewer.classList.remove('active');
+    imageViewerImg.src = '';
+  });
+
+  /* ===================== 发布攻略 ===================== */
+  shareGuideBtn.addEventListener('click', () => {
+    postTextarea.value = '';
+    newPostImages = [];
+    renderPostImagePreviews();
+    postModal.classList.add('active');
+    postSubmitBtn.disabled = true;
+    postTextarea.focus();
+  });
+
+  postTextarea.addEventListener('input', () => {
+    postSubmitBtn.disabled = postTextarea.value.trim().length === 0;
+  });
+
+  postImageInput.addEventListener('change', function() {
+    const files = Array.from(this.files || []);
+    files.forEach(file => {
+      if (!file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        newPostImages.push(e.target.result);
+        renderPostImagePreviews();
+      };
+      reader.readAsDataURL(file);
+    });
+    this.value = '';
+  });
+
+  function renderPostImagePreviews() {
+    // 移除已有预览
+    postImageUpload.querySelectorAll('.upload-preview-wrap').forEach(el => el.remove());
+    newPostImages.forEach((src, idx) => {
+      const wrap = document.createElement('div');
+      wrap.className = 'upload-preview-wrap';
+      wrap.innerHTML = `<img class="upload-preview" src="${src}"><div class="upload-remove" data-idx="${idx}">✕</div>`;
+      postImageUpload.appendChild(wrap);
+    });
+    postImageUpload.querySelectorAll('.upload-remove').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const idx = parseInt(this.dataset.idx, 10);
+        newPostImages.splice(idx, 1);
+        renderPostImagePreviews();
+      });
+    });
+  }
+
+  postCancelBtn.addEventListener('click', () => {
+    postModal.classList.remove('active');
+  });
+
+  postSubmitBtn.addEventListener('click', () => {
+    const text = postTextarea.value.trim();
+    if (!text) return;
+    posts.unshift({
+      id: 'p' + Date.now(),
+      author: '你',
+      avatar: '你',
+      time: nowTimeLabel(),
+      content: text,
+      images: newPostImages.slice(),
+      likes: 0,
+      liked: false,
+      comments: []
+    });
+    newPostImages = [];
+    postModal.classList.remove('active');
+    renderGuideFeed();
+  });
+
+  /* ===================== 打卡、邀请 ===================== */
+  checkinBtn.addEventListener('click', () => {
+    checkinCount += 1;
+    checkinCountEl.textContent = checkinCount;
+    checkinCountEl.style.transform = 'scale(1.2)';
+    setTimeout(() => checkinCountEl.style.transform = 'scale(1)', 100);
+  });
+
+  inviteLink.addEventListener('click', () => {
+    alert('🔗 邀请链接已生成 (演示)');
+  });
+
+  /* ===================== 初始化 ===================== */
+  function init() {
+    renderActivities('all');
+    renderGuideFeed();
+    budgetValue.innerHTML = '¥' + userBudget + ' <small>/ 人</small>';
+    updateHero();
+
+    // 弹窗初始可见（overlay 不带 hidden 类）
+    // 如果想每次刷新都弹，保持现状即可
+    // 如果想只弹一次，可解开下面注释
+    // if (localStorage.getItem('prefDone')) {
+    //   modal.classList.add('hidden');
+    // }
+  }
+
+  init();
+
+})();
+</script>
+</body>
+</html>
