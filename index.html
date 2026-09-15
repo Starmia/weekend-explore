@@ -55,8 +55,6 @@
       max-width: 420px;
       padding: 1.8rem 1.5rem 1.5rem;
       box-shadow: 0 30px 60px -20px rgba(0, 20, 45, 0.35), 0 8px 24px -8px rgba(0, 0, 0, 0.1);
-      transform: translateY(0);
-      transition: transform 0.25s ease;
       animation: modalPop 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2);
     }
 
@@ -65,42 +63,14 @@
       100% { transform: scale(1) translateY(0); opacity: 1; }
     }
 
-    .modal-step {
-      display: none;
-    }
+    .modal-step { display: none; }
+    .modal-step.active { display: block; }
 
-    .modal-step.active {
-      display: block;
-    }
+    .modal-icon { font-size: 2.2rem; text-align: center; margin-bottom: 0.5rem; }
+    .modal-title { font-size: 1.3rem; font-weight: 700; text-align: center; color: #0a1a2b; margin-bottom: 0.3rem; }
+    .modal-sub { font-size: 0.82rem; text-align: center; color: #5d7a97; margin-bottom: 1.4rem; }
 
-    .modal-icon {
-      font-size: 2.2rem;
-      text-align: center;
-      margin-bottom: 0.5rem;
-    }
-
-    .modal-title {
-      font-size: 1.3rem;
-      font-weight: 700;
-      text-align: center;
-      color: #0a1a2b;
-      margin-bottom: 0.3rem;
-      letter-spacing: -0.01em;
-    }
-
-    .modal-sub {
-      font-size: 0.82rem;
-      text-align: center;
-      color: #5d7a97;
-      margin-bottom: 1.4rem;
-    }
-
-    .option-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.65rem;
-      margin-bottom: 1.2rem;
-    }
+    .option-list { display: flex; flex-direction: column; gap: 0.65rem; margin-bottom: 1.2rem; }
 
     .option-item {
       background: #f4f9ff;
@@ -118,516 +88,116 @@
       user-select: none;
     }
 
-    .option-item:hover {
-      background: #eaf3fe;
-      border-color: #b9d2ea;
-    }
+    .option-item:hover { background: #eaf3fe; border-color: #b9d2ea; }
+    .option-item.selected { background: #1e3a5f; border-color: #1e3a5f; color: #ffffff; box-shadow: 0 6px 14px -6px rgba(20, 55, 95, 0.4); }
+    .option-item .opt-emoji { font-size: 1.3rem; line-height: 1; }
+    .option-item .opt-check { margin-left: auto; font-size: 0.85rem; opacity: 0; transition: opacity 0.1s; }
+    .option-item.selected .opt-check { opacity: 1; }
 
-    .option-item.selected {
-      background: #1e3a5f;
-      border-color: #1e3a5f;
-      color: #ffffff;
-      box-shadow: 0 6px 14px -6px rgba(20, 55, 95, 0.4);
-    }
-
-    .option-item .opt-emoji {
-      font-size: 1.3rem;
-      line-height: 1;
-    }
-
-    .option-item .opt-check {
-      margin-left: auto;
-      font-size: 0.85rem;
-      opacity: 0;
-      transition: opacity 0.1s;
-    }
-
-    .option-item.selected .opt-check {
-      opacity: 1;
-    }
-
-    /* 预算滑块 */
-    .budget-slider-wrap {
-      margin: 0.6rem 0 1.2rem;
-    }
-
-    .budget-value {
-      font-size: 1.5rem;
-      font-weight: 700;
-      text-align: center;
-      color: #1e3a5f;
-      margin-bottom: 0.4rem;
-    }
-
-    .budget-value small {
-      font-size: 0.8rem;
-      font-weight: 500;
-      color: #5d7a97;
-    }
+    .budget-slider-wrap { margin: 0.6rem 0 1.2rem; }
+    .budget-value { font-size: 1.5rem; font-weight: 700; text-align: center; color: #1e3a5f; margin-bottom: 0.4rem; }
+    .budget-value small { font-size: 0.8rem; font-weight: 500; color: #5d7a97; }
 
     input[type="range"] {
-      width: 100%;
-      height: 6px;
-      border-radius: 6px;
-      background: #dde9f5;
-      outline: none;
-      -webkit-appearance: none;
-      appearance: none;
+      width: 100%; height: 6px; border-radius: 6px; background: #dde9f5;
+      outline: none; -webkit-appearance: none; appearance: none;
     }
-
     input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      background: #1e3a5f;
-      cursor: pointer;
-      border: 3px solid white;
-      box-shadow: 0 2px 8px rgba(0, 30, 60, 0.3);
+      -webkit-appearance: none; appearance: none; width: 22px; height: 22px;
+      border-radius: 50%; background: #1e3a5f; cursor: pointer;
+      border: 3px solid white; box-shadow: 0 2px 8px rgba(0, 30, 60, 0.3);
     }
-
     input[type="range"]::-moz-range-thumb {
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      background: #1e3a5f;
-      cursor: pointer;
-      border: 3px solid white;
+      width: 22px; height: 22px; border-radius: 50%; background: #1e3a5f;
+      cursor: pointer; border: 3px solid white;
     }
+    .budget-labels { display: flex; justify-content: space-between; font-size: 0.7rem; color: #7c94ab; margin-top: 0.35rem; }
 
-    .budget-labels {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.7rem;
-      color: #7c94ab;
-      margin-top: 0.35rem;
-    }
-
-    /* 同行人数 */
-    .people-row {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 1.2rem;
-    }
-
+    .people-row { display: flex; gap: 0.5rem; margin-bottom: 1.2rem; }
     .people-chip {
-      flex: 1;
-      text-align: center;
-      background: #f4f9ff;
-      border: 1.5px solid #dde9f5;
-      border-radius: 16px;
-      padding: 0.7rem 0.3rem;
-      font-size: 0.82rem;
-      font-weight: 500;
-      color: #1d3b5a;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      user-select: none;
+      flex: 1; text-align: center; background: #f4f9ff; border: 1.5px solid #dde9f5;
+      border-radius: 16px; padding: 0.7rem 0.3rem; font-size: 0.82rem;
+      font-weight: 500; color: #1d3b5a; cursor: pointer; transition: all 0.15s ease; user-select: none;
     }
+    .people-chip.selected { background: #1e3a5f; border-color: #1e3a5f; color: white; }
 
-    .people-chip.selected {
-      background: #1e3a5f;
-      border-color: #1e3a5f;
-      color: white;
-    }
-
-    /* 弹窗底部按钮 */
-    .modal-actions {
-      display: flex;
-      gap: 0.6rem;
-      margin-top: 0.4rem;
-    }
-
+    .modal-actions { display: flex; gap: 0.6rem; margin-top: 0.4rem; }
     .btn-primary {
-      flex: 1;
-      background: #1e3a5f;
-      color: white;
-      border: none;
-      border-radius: 40px;
-      padding: 0.85rem 1rem;
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      box-shadow: 0 8px 18px -8px rgba(20, 55, 95, 0.5);
+      flex: 1; background: #1e3a5f; color: white; border: none; border-radius: 40px;
+      padding: 0.85rem 1rem; font-size: 0.95rem; font-weight: 600; cursor: pointer;
+      transition: all 0.15s ease; box-shadow: 0 8px 18px -8px rgba(20, 55, 95, 0.5);
     }
+    .btn-primary:hover { background: #112b44; transform: translateY(-1px); }
+    .btn-ghost { background: transparent; border: none; color: #5d7a97; font-size: 0.82rem; font-weight: 500; cursor: pointer; padding: 0.5rem 1rem; border-radius: 40px; }
+    .btn-ghost:hover { background: #eef4fb; }
 
-    .btn-primary:hover {
-      background: #112b44;
-      transform: translateY(-1px);
-    }
-
-    .btn-primary:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
-
-    .btn-ghost {
-      background: transparent;
-      border: none;
-      color: #5d7a97;
-      font-size: 0.82rem;
-      font-weight: 500;
-      cursor: pointer;
-      padding: 0.5rem 1rem;
-      border-radius: 40px;
-    }
-
-    .btn-ghost:hover {
-      background: #eef4fb;
-    }
-
-    .step-dots {
-      display: flex;
-      justify-content: center;
-      gap: 0.4rem;
-      margin-bottom: 1.1rem;
-    }
-
-    .dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: #d6e2ef;
-      transition: all 0.2s;
-    }
-
-    .dot.active {
-      background: #1e3a5f;
-      width: 20px;
-      border-radius: 10px;
-    }
-
-    .skip-row {
-      text-align: center;
-      margin-top: 0.6rem;
-    }
+    .step-dots { display: flex; justify-content: center; gap: 0.4rem; margin-bottom: 1.1rem; }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: #d6e2ef; transition: all 0.2s; }
+    .dot.active { background: #1e3a5f; width: 20px; border-radius: 10px; }
+    .skip-row { text-align: center; margin-top: 0.6rem; }
 
     /* ---------- 原有样式 ---------- */
-    .hero {
-      margin-bottom: 1.75rem;
-      padding: 0.25rem 0;
-    }
-
-    .hero h1 {
-      font-size: 2rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: #0a1a2b;
-    }
-
-    .hero h1 span {
-      background: #e6edf6;
-      border-radius: 100px;
-      font-size: 1rem;
-      font-weight: 500;
-      padding: 0.2rem 0.8rem;
-      color: #2b4c6e;
-      letter-spacing: 0.01em;
-    }
-
-    .subhead {
-      font-size: 0.95rem;
-      color: #4a5e72;
-      margin-top: 0.35rem;
-      display: flex;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
-
-    .subhead .weather-badge {
-      background: #d9e6f2;
-      border-radius: 30px;
-      padding: 0.2rem 0.8rem;
-      font-size: 0.8rem;
-      font-weight: 500;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
-      color: #1b3a5c;
-    }
+    .hero { margin-bottom: 1.75rem; padding: 0.25rem 0; }
+    .hero h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.02em; display: flex; align-items: center; gap: 0.5rem; color: #0a1a2b; }
+    .hero h1 span { background: #e6edf6; border-radius: 100px; font-size: 1rem; font-weight: 500; padding: 0.2rem 0.8rem; color: #2b4c6e; }
+    .subhead { font-size: 0.95rem; color: #4a5e72; margin-top: 0.35rem; display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .subhead .weather-badge { background: #d9e6f2; border-radius: 30px; padding: 0.2rem 0.8rem; font-size: 0.8rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.3rem; color: #1b3a5c; }
 
     .recommend-card {
       background: linear-gradient(135deg, #ffffff 0%, #f3f8ff 100%);
-      border-radius: 32px;
-      padding: 1.5rem 1.25rem;
-      margin-bottom: 1.75rem;
+      border-radius: 32px; padding: 1.5rem 1.25rem; margin-bottom: 1.75rem;
       box-shadow: 0 12px 28px -8px rgba(0, 30, 60, 0.12), 0 4px 12px rgba(0, 0, 0, 0.02);
       border: 1px solid rgba(255, 255, 255, 0.8);
-      backdrop-filter: blur(2px);
     }
 
-    .recommend-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.2rem;
-    }
+    .recommend-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; }
+    .recommend-header h2 { font-size: 1.25rem; font-weight: 600; display: flex; align-items: center; gap: 0.4rem; }
+    .pill { background: #0d2d4b; color: white; border-radius: 40px; font-size: 0.7rem; font-weight: 500; padding: 0.2rem 0.7rem; }
 
-    .recommend-header h2 {
-      font-size: 1.25rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    .pill {
-      background: #0d2d4b;
-      color: white;
-      border-radius: 40px;
-      font-size: 0.7rem;
-      font-weight: 500;
-      padding: 0.2rem 0.7rem;
-      letter-spacing: 0.02em;
-    }
-
-    .pref-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.6rem;
-      margin: 1rem 0 1.25rem;
-    }
-
+    .pref-row { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 1rem 0 1.25rem; }
     .pref-chip {
-      background: white;
-      border: 1px solid #cfdeed;
-      border-radius: 40px;
-      padding: 0.45rem 1rem;
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: #1f3a57;
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-      transition: all 0.15s ease;
-      cursor: pointer;
-      user-select: none;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+      background: white; border: 1px solid #cfdeed; border-radius: 40px; padding: 0.45rem 1rem;
+      font-size: 0.85rem; font-weight: 500; color: #1f3a57; display: flex; align-items: center;
+      gap: 0.3rem; transition: all 0.15s ease; cursor: pointer; user-select: none;
     }
+    .pref-chip.active { background: #1e3a5f; border-color: #1e3a5f; color: white; }
+    .pref-chip i { font-style: normal; font-size: 1rem; }
 
-    .pref-chip.active {
-      background: #1e3a5f;
-      border-color: #1e3a5f;
-      color: white;
-      box-shadow: 0 6px 12px -6px rgba(20, 50, 80, 0.3);
-    }
-
-    .pref-chip i {
-      font-style: normal;
-      font-size: 1rem;
-    }
-
-    .activity-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.85rem;
-    }
-
+    .activity-list { display: flex; flex-direction: column; gap: 0.85rem; }
     .activity-item {
-      background: white;
-      border-radius: 20px;
-      padding: 1rem 1.1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.9rem;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
-      border: 1px solid #e2eaf3;
-      transition: all 0.1s ease;
+      background: white; border-radius: 20px; padding: 1rem 1.1rem;
+      display: flex; align-items: center; gap: 0.9rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02); border: 1px solid #e2eaf3;
     }
-
-    .activity-icon {
-      width: 48px;
-      height: 48px;
-      background: #e9f0f9;
-      border-radius: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.6rem;
-      flex-shrink: 0;
-    }
-
-    .activity-info {
-      flex: 1;
-    }
-
-    .activity-title {
-      font-weight: 600;
-      font-size: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-      margin-bottom: 0.2rem;
-    }
-
-    .activity-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.7rem;
-      font-size: 0.75rem;
-      color: #4e6f8f;
-      align-items: center;
-    }
-
-    .activity-meta span {
-      display: flex;
-      align-items: center;
-      gap: 0.2rem;
-    }
-
-    .budget-tag {
-      background: #e1f0e8;
-      border-radius: 30px;
-      padding: 0.15rem 0.6rem;
-      font-size: 0.7rem;
-      font-weight: 500;
-      color: #146b3a;
-    }
-
-    .budget-tag.free {
-      background: #d9f0e1;
-      color: #0b5e2e;
-    }
-
-    .budget-tag.low {
-      background: #e6f0fa;
-      color: #1f6390;
-    }
+    .activity-icon { width: 48px; height: 48px; background: #e9f0f9; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; flex-shrink: 0; }
+    .activity-info { flex: 1; }
+    .activity-title { font-weight: 600; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.2rem; }
+    .activity-meta { display: flex; flex-wrap: wrap; gap: 0.7rem; font-size: 0.75rem; color: #4e6f8f; align-items: center; }
+    .activity-meta span { display: flex; align-items: center; gap: 0.2rem; }
+    .budget-tag { background: #e1f0e8; border-radius: 30px; padding: 0.15rem 0.6rem; font-size: 0.7rem; font-weight: 500; color: #146b3a; }
+    .budget-tag.free { background: #d9f0e1; color: #0b5e2e; }
+    .budget-tag.low { background: #e6f0fa; color: #1f6390; }
 
     .join-btn {
-      background: #1e3a5f;
-      border: none;
-      border-radius: 40px;
-      padding: 0.5rem 1rem;
-      color: white;
-      font-weight: 500;
-      font-size: 0.75rem;
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      white-space: nowrap;
-      box-shadow: 0 4px 8px -4px rgba(0, 30, 60, 0.3);
+      background: #1e3a5f; border: none; border-radius: 40px; padding: 0.5rem 1rem;
+      color: white; font-weight: 500; font-size: 0.75rem; display: flex; align-items: center;
+      gap: 0.25rem; cursor: pointer; white-space: nowrap;
     }
+    .join-btn.joined { background: #2e7d5e; pointer-events: none; opacity: 0.9; }
 
-    .join-btn:hover {
-      background: #112b44;
-      transform: scale(0.97);
-    }
+    .team-section { margin: 1.5rem 0 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    .team-card { background: #ffffff; border-radius: 24px; padding: 1rem 0.9rem; border: 1px solid #dde7f0; }
+    .team-card h3 { font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.7rem; color: #1e3a5f; }
+    .team-avatars { display: flex; align-items: center; gap: 0.5rem; }
+    .avatar { width: 32px; height: 32px; border-radius: 100px; background: #cad9e9; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 500; color: #1d3b5a; border: 2px solid white; }
+    .avatar.more { background: #e2eaf3; font-size: 0.7rem; color: #2c4e6e; }
+    .invite-link { font-size: 0.7rem; color: #1f6390; margin-top: 0.6rem; text-decoration: underline; cursor: pointer; }
+    .checkin-badge { display: flex; align-items: center; justify-content: space-between; }
+    .checkin-count { font-size: 1.6rem; font-weight: 700; color: #1e3a5f; line-height: 1; }
+    .checkin-label { font-size: 0.7rem; color: #547190; }
+    .checkin-btn { background: #f0f6fe; border: none; border-radius: 40px; padding: 0.5rem 1rem; font-size: 0.75rem; font-weight: 500; color: #1e3a5f; cursor: pointer; }
 
-    .join-btn.joined {
-      background: #2e7d5e;
-      pointer-events: none;
-      opacity: 0.9;
-    }
-
-    .team-section {
-      margin: 1.5rem 0 1rem;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.8rem;
-    }
-
-    .team-card {
-      background: #ffffff;
-      border-radius: 24px;
-      padding: 1rem 0.9rem;
-      border: 1px solid #dde7f0;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-    }
-
-    .team-card h3 {
-      font-size: 0.9rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      margin-bottom: 0.7rem;
-      color: #1e3a5f;
-    }
-
-    .team-avatars {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 100px;
-      background: #cad9e9;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: #1d3b5a;
-      border: 2px solid white;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-    }
-
-    .avatar.more {
-      background: #e2eaf3;
-      font-size: 0.7rem;
-      color: #2c4e6e;
-    }
-
-    .invite-link {
-      font-size: 0.7rem;
-      color: #1f6390;
-      margin-top: 0.6rem;
-      text-decoration: underline;
-      text-underline-offset: 2px;
-      cursor: pointer;
-    }
-
-    .checkin-badge {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .checkin-count {
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: #1e3a5f;
-      line-height: 1;
-    }
-
-    .checkin-label {
-      font-size: 0.7rem;
-      color: #547190;
-    }
-
-    .checkin-btn {
-      background: #f0f6fe;
-      border: none;
-      border-radius: 40px;
-      padding: 0.5rem 1rem;
-      font-size: 0.75rem;
-      font-weight: 500;
-      color: #1e3a5f;
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-      cursor: pointer;
-      transition: all 0.1s;
-    }
-
-    .checkin-btn:active {
-      background: #d9e6f5;
-    }
-
+    /* ---------- 攻略分享（增强版） ---------- */
     .share-section {
       background: #ffffffd9;
       backdrop-filter: blur(8px);
@@ -638,74 +208,435 @@
       box-shadow: 0 8px 20px -10px rgba(0, 30, 60, 0.1);
     }
 
-    .share-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .share-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.9rem; }
+    .share-header h3 { font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 0.4rem; }
+    .share-btn { background: none; border: none; color: #1f6390; font-size: 0.75rem; font-weight: 500; display: flex; align-items: center; gap: 0.3rem; cursor: pointer; padding: 0.2rem 0.5rem; border-radius: 40px; }
+    .share-btn:hover { background: #ecf3fa; }
+
+    /* 攻略卡片 */
+    .guide-post {
+      background: #f5faff;
+      border-radius: 22px;
+      padding: 1rem 1rem 0.85rem;
       margin-bottom: 0.9rem;
+      border-left: 4px solid #1e3a5f;
     }
 
-    .share-header h3 {
-      font-size: 1rem;
-      font-weight: 600;
+    .guide-post-header {
       display: flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 0.6rem;
+      margin-bottom: 0.6rem;
     }
 
-    .share-btn {
+    .guide-avatar {
+      width: 34px; height: 34px; border-radius: 100px; background: #1e3a5f;
+      color: white; display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; font-weight: 600; flex-shrink: 0;
+    }
+
+    .guide-author { font-size: 0.82rem; font-weight: 600; color: #1d3b5a; }
+    .guide-time { font-size: 0.7rem; color: #7c94ab; margin-left: auto; }
+
+    .guide-content {
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: #2f4f6f;
+      margin-bottom: 0.7rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* 用户上传的图片 */
+    .guide-images {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-bottom: 0.7rem;
+    }
+
+    .guide-image-item {
+      width: 72px;
+      height: 72px;
+      border-radius: 14px;
+      object-fit: cover;
+      border: 1.5px solid white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      background: #e9f0f9;
+      cursor: pointer;
+    }
+
+    /* 操作栏：点赞、评论数 */
+    .guide-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding-top: 0.5rem;
+      border-top: 1px dashed #d2e2f0;
+    }
+
+    .action-btn {
       background: none;
       border: none;
-      color: #1f6390;
-      font-size: 0.75rem;
-      font-weight: 500;
       display: flex;
       align-items: center;
       gap: 0.3rem;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: #547190;
       cursor: pointer;
-      padding: 0.2rem 0.5rem;
-      border-radius: 40px;
+      padding: 0.3rem 0.5rem;
+      border-radius: 30px;
+      transition: all 0.12s ease;
     }
 
-    .share-btn:hover {
-      background: #ecf3fa;
+    .action-btn:hover { background: #e4eefa; }
+
+    .action-btn.liked {
+      color: #d43f3f;
+      font-weight: 600;
     }
 
-    .guide-preview {
-      background: #f5faff;
-      border-radius: 20px;
-      padding: 0.9rem 1rem;
+    .action-btn.liked .heart-icon {
+      animation: heartPop 0.3s ease;
+    }
+
+    @keyframes heartPop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.4); }
+      100% { transform: scale(1); }
+    }
+
+    /* 评论区域 */
+    .comments-list {
+      margin-top: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .comment-item {
+      background: white;
+      border-radius: 16px;
+      padding: 0.65rem 0.8rem;
       font-size: 0.8rem;
-      color: #2f4f6f;
-      border-left: 4px solid #1e3a5f;
-      margin-bottom: 0.8rem;
-      line-height: 1.45;
+      border: 1px solid #e4eef8;
     }
 
-    .guide-meta {
+    .comment-header {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .comment-avatar {
+      width: 24px; height: 24px; border-radius: 100px;
+      background: #cad9e9; color: #1d3b5a;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; font-weight: 600;
+    }
+
+    .comment-author { font-weight: 600; color: #1d3b5a; font-size: 0.75rem; }
+    .comment-time { font-size: 0.65rem; color: #8ca3b9; margin-left: auto; }
+
+    .comment-content {
+      color: #2f4f6f;
+      line-height: 1.45;
+      word-break: break-word;
+      padding-left: 2px;
+    }
+
+    .comment-actions {
+      display: flex;
+      gap: 0.8rem;
+      margin-top: 0.4rem;
+      padding-left: 2px;
+    }
+
+    .comment-action-btn {
+      background: none;
+      border: none;
       font-size: 0.7rem;
       color: #6e8aa8;
+      cursor: pointer;
+      padding: 0.15rem 0.3rem;
+      border-radius: 20px;
       display: flex;
-      gap: 1rem;
-      margin-top: 0.4rem;
+      align-items: center;
+      gap: 0.25rem;
     }
 
-    .footer-note {
-      text-align: center;
-      font-size: 0.7rem;
-      color: #7c94ab;
-      margin-top: 2rem;
-      border-top: 1px solid #d7e2ed;
-      padding-top: 1.2rem;
+    .comment-action-btn:hover { background: #eef4fb; color: #1f6390; }
+    .comment-action-btn.liked { color: #d43f3f; font-weight: 600; }
+
+    /* 回复列表 */
+    .replies-list {
+      margin-top: 0.5rem;
+      padding-left: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      border-left: 2px solid #e4eef8;
     }
+
+    .reply-item {
+      background: #fafdff;
+      border-radius: 12px;
+      padding: 0.5rem 0.65rem;
+      font-size: 0.76rem;
+      border: 1px solid #eaf2fa;
+    }
+
+    .reply-header {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .reply-avatar {
+      width: 20px; height: 20px; border-radius: 100px;
+      background: #dbe8f5; color: #1d3b5a;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.55rem; font-weight: 600;
+    }
+
+    .reply-author { font-weight: 600; color: #1d3b5a; font-size: 0.72rem; }
+    .reply-time { font-size: 0.6rem; color: #8ca3b9; margin-left: auto; }
+
+    .reply-content {
+      color: #3f5e7c;
+      line-height: 1.4;
+      word-break: break-word;
+      padding-left: 1.6rem;
+    }
+
+    /* 输入区域 */
+    .comment-input-area {
+      margin-top: 0.9rem;
+      display: flex;
+      gap: 0.5rem;
+      align-items: flex-start;
+    }
+
+    .comment-input {
+      flex: 1;
+      border: 1.5px solid #dde9f5;
+      border-radius: 20px;
+      padding: 0.6rem 0.9rem;
+      font-size: 0.8rem;
+      font-family: inherit;
+      color: #1d3b5a;
+      resize: none;
+      outline: none;
+      transition: border-color 0.15s;
+      min-height: 42px;
+      max-height: 100px;
+      line-height: 1.4;
+    }
+
+    .comment-input:focus { border-color: #7ba7d0; }
+    .comment-input::placeholder { color: #9db3c9; }
+
+    .comment-submit-btn {
+      background: #1e3a5f;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 0.6rem 1rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      flex-shrink: 0;
+      height: 42px;
+    }
+
+    .comment-submit-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* 回复目标提示条 */
+    .reply-target-bar {
+      display: none;
+      background: #eaf3fe;
+      border-radius: 14px;
+      padding: 0.4rem 0.7rem;
+      font-size: 0.72rem;
+      color: #1f6390;
+      margin-top: 0.5rem;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .reply-target-bar.active { display: flex; }
+
+    .reply-target-bar button {
+      background: none;
+      border: none;
+      color: #1f6390;
+      cursor: pointer;
+      font-size: 0.85rem;
+      padding: 0 0.3rem;
+    }
+
+    /* 发布新攻略弹窗 */
+    .post-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 25, 45, 0.45);
+      backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .post-modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .post-modal {
+      background: white;
+      border-radius: 28px;
+      width: 100%;
+      max-width: 420px;
+      padding: 1.5rem 1.3rem;
+      max-height: 88vh;
+      overflow-y: auto;
+    }
+
+    .post-modal h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #0a1a2b;
+      margin-bottom: 0.3rem;
+    }
+
+    .post-modal-sub {
+      font-size: 0.78rem;
+      color: #5d7a97;
+      margin-bottom: 1rem;
+    }
+
+    .post-textarea {
+      width: 100%;
+      border: 1.5px solid #dde9f5;
+      border-radius: 18px;
+      padding: 0.8rem 0.9rem;
+      font-size: 0.85rem;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 100px;
+      outline: none;
+      color: #1d3b5a;
+      line-height: 1.5;
+    }
+
+    .post-textarea:focus { border-color: #7ba7d0; }
+
+    .post-image-upload {
+      margin-top: 0.8rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .upload-label {
+      width: 64px;
+      height: 64px;
+      border: 2px dashed #b9d2ea;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      color: #6e8aa8;
+      cursor: pointer;
+      transition: all 0.15s;
+      gap: 0.1rem;
+    }
+
+    .upload-label:hover { background: #f4f9ff; border-color: #7ba7d0; }
+
+    .upload-preview {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      object-fit: cover;
+      position: relative;
+      border: 1.5px solid #dde9f5;
+    }
+
+    .upload-preview-wrap {
+      position: relative;
+      width: 64px;
+      height: 64px;
+    }
+
+    .upload-remove {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #d43f3f;
+      color: white;
+      border: 2px solid white;
+      font-size: 0.65rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .post-modal-actions {
+      display: flex;
+      gap: 0.6rem;
+      margin-top: 1.2rem;
+    }
+
+    /* 图片查看器 */
+    .image-viewer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .image-viewer-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .image-viewer-overlay img {
+      max-width: 92%;
+      max-height: 85%;
+      border-radius: 12px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .footer-note { text-align: center; font-size: 0.7rem; color: #7c94ab; margin-top: 2rem; border-top: 1px solid #d7e2ed; padding-top: 1.2rem; }
 
     @media (max-width: 400px) {
-      .team-section {
-        grid-template-columns: 1fr;
-      }
-      .modal-card {
-        padding: 1.5rem 1.2rem 1.2rem;
-      }
+      .team-section { grid-template-columns: 1fr; }
+      .modal-card { padding: 1.5rem 1.2rem 1.2rem; }
     }
   </style>
 </head>
@@ -714,8 +645,6 @@
 <!-- ========== 偏好选择测试弹窗 ========== -->
 <div class="modal-overlay" id="prefModal">
   <div class="modal-card">
-
-    <!-- 步骤指示器 -->
     <div class="step-dots" id="stepDots">
       <div class="dot active"></div>
       <div class="dot"></div>
@@ -727,26 +656,12 @@
       <div class="modal-icon">🧭</div>
       <div class="modal-title">你更想怎么玩？</div>
       <div class="modal-sub">选择最符合你周末心情的标签（可多选）</div>
-
       <div class="option-list" id="interestOptions">
-        <div class="option-item" data-value="exhibition">
-          <span class="opt-emoji">🖼️</span> 看展览 · 艺术熏陶
-          <span class="opt-check">✓</span>
-        </div>
-        <div class="option-item" data-value="market">
-          <span class="opt-emoji">🛍️</span> 逛市集 · 烟火气
-          <span class="opt-check">✓</span>
-        </div>
-        <div class="option-item" data-value="performance">
-          <span class="opt-emoji">🎭</span> 看演出 · 现场氛围
-          <span class="opt-check">✓</span>
-        </div>
-        <div class="option-item" data-value="hiking">
-          <span class="opt-emoji">🥾</span> 去徒步 · 亲近自然
-          <span class="opt-check">✓</span>
-        </div>
+        <div class="option-item" data-value="exhibition"><span class="opt-emoji">🖼️</span> 看展览 · 艺术熏陶<span class="opt-check">✓</span></div>
+        <div class="option-item" data-value="market"><span class="opt-emoji">🛍️</span> 逛市集 · 烟火气<span class="opt-check">✓</span></div>
+        <div class="option-item" data-value="performance"><span class="opt-emoji">🎭</span> 看演出 · 现场氛围<span class="opt-check">✓</span></div>
+        <div class="option-item" data-value="hiking"><span class="opt-emoji">🥾</span> 去徒步 · 亲近自然<span class="opt-check">✓</span></div>
       </div>
-
       <div class="modal-actions">
         <button class="btn-primary" id="step1Next">下一步 · 预算</button>
       </div>
@@ -760,17 +675,11 @@
       <div class="modal-icon">💰</div>
       <div class="modal-title">周末预算大概多少？</div>
       <div class="modal-sub">拖动滑块选择你能接受的单人花费</div>
-
       <div class="budget-slider-wrap">
         <div class="budget-value" id="budgetValue">¥80 <small>/ 人</small></div>
         <input type="range" id="budgetRange" min="0" max="300" step="10" value="80">
-        <div class="budget-labels">
-          <span>¥0</span>
-          <span>¥150</span>
-          <span>¥300+</span>
-        </div>
+        <div class="budget-labels"><span>¥0</span><span>¥150</span><span>¥300+</span></div>
       </div>
-
       <div class="modal-actions">
         <button class="btn-ghost" id="step2Back">返回</button>
         <button class="btn-primary" id="step2Next">下一步 · 同行</button>
@@ -782,30 +691,23 @@
       <div class="modal-icon">👥</div>
       <div class="modal-title">和谁一起出发？</div>
       <div class="modal-sub">选择大概的同行人数</div>
-
       <div class="people-row" id="peopleRow">
         <div class="people-chip" data-value="1">1人</div>
         <div class="people-chip selected" data-value="2-4">2-4人</div>
         <div class="people-chip" data-value="5+">5人+</div>
       </div>
-
       <div class="modal-actions">
         <button class="btn-ghost" id="step3Back">返回</button>
         <button class="btn-primary" id="finishBtn">✨ 生成我的推荐</button>
       </div>
     </div>
-
   </div>
 </div>
 
 <!-- ========== 主页面 ========== -->
 <div class="app-container">
-
   <div class="hero">
-    <h1>
-      🌆 周末探索
-      <span>雏形</span>
-    </h1>
+    <h1>🌆 周末探索 <span>雏形</span></h1>
     <div class="subhead">
       <div class="weather-badge">⛅ 22°C · 多云 · 微风</div>
       <div style="display:flex; gap:0.5rem;" id="heroPrefs">
@@ -818,364 +720,4 @@
   <div class="recommend-card">
     <div class="recommend-header">
       <h2>🎯 为你推荐</h2>
-      <div class="pill" id="matchPill">智能匹配</div>
-    </div>
-
-    <div class="pref-row" id="prefRow">
-      <div class="pref-chip active" data-pref="all"><i>✨</i> 全部</div>
-      <div class="pref-chip" data-pref="exhibition"><i>🖼️</i> 展览</div>
-      <div class="pref-chip" data-pref="market"><i>🛍️</i> 市集</div>
-      <div class="pref-chip" data-pref="performance"><i>🎭</i> 演出</div>
-      <div class="pref-chip" data-pref="hiking"><i>🥾</i> 徒步</div>
-    </div>
-
-    <div class="activity-list" id="activityList"></div>
-  </div>
-
-  <div class="team-section">
-    <div class="team-card">
-      <h3>👋 组队出发</h3>
-      <div class="team-avatars">
-        <div class="avatar">你</div>
-        <div class="avatar">小A</div>
-        <div class="avatar">小B</div>
-        <div class="avatar more">+2</div>
-      </div>
-      <div class="invite-link" id="inviteLink">🔗 邀请同行好友</div>
-    </div>
-    <div class="team-card">
-      <h3>📍 打卡记录</h3>
-      <div class="checkin-badge">
-        <div>
-          <div class="checkin-count" id="checkinCount">7</div>
-          <div class="checkin-label">已打卡地点</div>
-        </div>
-        <button class="checkin-btn" id="checkinBtn">+ 打卡</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="share-section">
-    <div class="share-header">
-      <h3>📝 攻略分享</h3>
-      <button class="share-btn" id="shareGuideBtn">+ 发布攻略</button>
-    </div>
-    <div class="guide-preview" id="guidePreview">
-      <strong>「秋日市集漫游」</strong> 从创意园到滨江步道，下午3点光线绝佳，推荐手工冰淇淋店。人均40元。
-      <div class="guide-meta">
-        <span>@小A · 2小时前</span>
-        <span>❤️ 12</span>
-        <span>💬 3</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="footer-note">
-    根据天气·预算·偏好推荐 · 组队打卡分享<br>点击偏好切换推荐 · 雏形可迭代
-  </div>
-</div>
-
-<script>
-  (function(){
-    // ===================== 活动数据 =====================
-    const activities = [
-      { id: 1, title: '城市印象·当代艺术展', type: 'exhibition', icon: '🖼️', budget: '¥60', budgetNum: 60, budgetTag: 'low', weather: '室内', people: '2-6人', time: '本周末 10:00-18:00', distance: '1.2km' },
-      { id: 2, title: '滨江创意市集', type: 'market', icon: '🛍️', budget: '免费', budgetNum: 0, budgetTag: 'free', weather: '户外', people: '不限', time: '周六 14:00-21:00', distance: '800m' },
-      { id: 3, title: 'Livehouse 独立乐队演出', type: 'performance', icon: '🎭', budget: '¥80', budgetNum: 80, budgetTag: 'low', weather: '室内', people: '1-4人', time: '周六 20:00', distance: '2.5km' },
-      { id: 4, title: '西山轻徒步·落日线', type: 'hiking', icon: '🥾', budget: '免费', budgetNum: 0, budgetTag: 'free', weather: '户外', people: '3-8人', time: '周日 15:00', distance: '5km' },
-      { id: 5, title: '复古胶片摄影展', type: 'exhibition', icon: '📸', budget: '¥40', budgetNum: 40, budgetTag: 'low', weather: '室内', people: '1-3人', time: '本周末全天', distance: '1.8km' },
-      { id: 6, title: '农夫市集·手作烘焙', type: 'market', icon: '🥐', budget: '¥30', budgetNum: 30, budgetTag: 'low', weather: '户外', people: '不限', time: '周六 9:00-14:00', distance: '1.5km' },
-      { id: 7, title: '露天电影之夜', type: 'performance', icon: '🎬', budget: '免费', budgetNum: 0, budgetTag: 'free', weather: '户外', people: '2-8人', time: '周六 19:30', distance: '2.2km' },
-      { id: 8, title: '老城巷子·城市漫步', type: 'hiking', icon: '🚶', budget: '免费', budgetNum: 0, budgetTag: 'free', weather: '户外', people: '1-6人', time: '周日 9:00', distance: '3km' }
-    ];
-
-    // ===================== DOM 引用 =====================
-    const activityListEl = document.getElementById('activityList');
-    const prefChips = document.querySelectorAll('.pref-chip');
-    const checkinCountEl = document.getElementById('checkinCount');
-    const checkinBtn = document.getElementById('checkinBtn');
-    const shareGuideBtn = document.getElementById('shareGuideBtn');
-    const guidePreview = document.getElementById('guidePreview');
-    const heroPeople = document.getElementById('heroPeople');
-    const heroBudget = document.getElementById('heroBudget');
-    const matchPill = document.getElementById('matchPill');
-    const inviteLink = document.getElementById('inviteLink');
-
-    // 弹窗引用
-    const modal = document.getElementById('prefModal');
-    const stepDots = document.querySelectorAll('.dot');
-    const step1 = document.querySelector('.modal-step[data-step="1"]');
-    const step2 = document.querySelector('.modal-step[data-step="2"]');
-    const step3 = document.querySelector('.modal-step[data-step="3"]');
-    const interestOptions = document.querySelectorAll('#interestOptions .option-item');
-    const budgetRange = document.getElementById('budgetRange');
-    const budgetValue = document.getElementById('budgetValue');
-    const peopleChips = document.querySelectorAll('#peopleRow .people-chip');
-    const step1Next = document.getElementById('step1Next');
-    const step2Back = document.getElementById('step2Back');
-    const step2Next = document.getElementById('step2Next');
-    const step3Back = document.getElementById('step3Back');
-    const finishBtn = document.getElementById('finishBtn');
-    const skipAllBtn = document.getElementById('skipAllBtn');
-
-    // ===================== 状态 =====================
-    let currentPref = 'all';
-    let checkinCount = 7;
-    let userInterests = [];   // 多选
-    let userBudget = 80;
-    let userPeople = '2-4';
-
-    // ===================== 通用：渲染活动 =====================
-    function renderActivities(pref) {
-      let filtered = activities;
-      if (pref !== 'all') {
-        filtered = activities.filter(a => a.type === pref);
-      }
-
-      // 如果有用户兴趣偏好（来自弹窗）且当前是"全部"，优先展示匹配兴趣的
-      if (userInterests.length > 0 && pref === 'all') {
-        const matched = activities.filter(a => userInterests.includes(a.type));
-        if (matched.length > 0) {
-          // 兴趣匹配的排前面，其余排后面
-          const others = activities.filter(a => !userInterests.includes(a.type));
-          filtered = [...matched, ...others];
-        }
-      }
-
-      if (filtered.length === 0) {
-        activityListEl.innerHTML = `<div style="text-align:center; padding:1.5rem; color:#7e97af; font-size:0.9rem;">✨ 这个偏好暂时没有推荐，试试其他标签吧</div>`;
-        return;
-      }
-
-      let html = '';
-      filtered.forEach(act => {
-        let budgetClass = 'budget-tag';
-        if (act.budget === '免费') budgetClass += ' free';
-        else budgetClass += ' low';
-
-        // 是否命中用户兴趣
-        const isMatched = userInterests.includes(act.type);
-        const matchBadge = isMatched ? '<span style="background:#e1f0e8;color:#146b3a;border-radius:30px;padding:0.1rem 0.5rem;font-size:0.65rem;font-weight:600;">✨ 兴趣匹配</span>' : '';
-
-        html += `
-          <div class="activity-item">
-            <div class="activity-icon">${act.icon}</div>
-            <div class="activity-info">
-              <div class="activity-title">
-                ${act.title}
-                ${matchBadge}
-                <span class="${budgetClass}">${act.budget}</span>
-              </div>
-              <div class="activity-meta">
-                <span>⏱️ ${act.time}</span>
-                <span>📍 ${act.distance}</span>
-                <span>👥 ${act.people}</span>
-                <span>🌤️ ${act.weather}</span>
-              </div>
-            </div>
-            <button class="join-btn" data-id="${act.id}">组队</button>
-          </div>
-        `;
-      });
-      activityListEl.innerHTML = html;
-
-      document.querySelectorAll('.join-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-          e.stopPropagation();
-          if (this.classList.contains('joined')) return;
-          this.classList.add('joined');
-          this.innerHTML = '✅ 已组队';
-        });
-      });
-    }
-
-    // ===================== 更新 Hero 区域显示 =====================
-    function updateHero() {
-      if (userPeople === '1') heroPeople.textContent = '👥 1人出发';
-      else if (userPeople === '2-4') heroPeople.textContent = '👥 2-4人同行';
-      else heroPeople.textContent = '👥 5人以上';
-
-      // 预算显示
-      if (userBudget >= 300) heroBudget.textContent = '💰 ¥300+';
-      else heroBudget.textContent = '💰 ¥0-' + userBudget;
-    }
-
-    // ===================== 弹窗步骤控制 =====================
-    function goToStep(step) {
-      step1.classList.remove('active');
-      step2.classList.remove('active');
-      step3.classList.remove('active');
-      stepDots.forEach((d, i) => d.classList.toggle('active', i === step - 1));
-
-      if (step === 1) step1.classList.add('active');
-      if (step === 2) step2.classList.add('active');
-      if (step === 3) step3.classList.add('active');
-    }
-
-    // 第一步：兴趣多选
-    interestOptions.forEach(opt => {
-      opt.addEventListener('click', function() {
-        this.classList.toggle('selected');
-        const val = this.dataset.value;
-        if (userInterests.includes(val)) {
-          userInterests = userInterests.filter(v => v !== val);
-        } else {
-          userInterests.push(val);
-        }
-      });
-    });
-
-    // 第一步下一步
-    step1Next.addEventListener('click', function() {
-      goToStep(2);
-    });
-
-    // 第二步：预算滑块
-    budgetRange.addEventListener('input', function() {
-      userBudget = parseInt(this.value);
-      if (userBudget >= 300) {
-        budgetValue.innerHTML = '¥300+ <small>/ 人</small>';
-      } else {
-        budgetValue.innerHTML = '¥' + userBudget + ' <small>/ 人</small>';
-      }
-    });
-
-    step2Back.addEventListener('click', function() {
-      goToStep(1);
-    });
-
-    step2Next.addEventListener('click', function() {
-      // 读取预算当前值
-      userBudget = parseInt(budgetRange.value);
-      goToStep(3);
-    });
-
-    // 第三步：人数单选
-    peopleChips.forEach(chip => {
-      chip.addEventListener('click', function() {
-        peopleChips.forEach(c => c.classList.remove('selected'));
-        this.classList.add('selected');
-        userPeople = this.dataset.value;
-      });
-    });
-
-    step3Back.addEventListener('click', function() {
-      goToStep(2);
-    });
-
-    // 完成 -> 关闭弹窗，应用偏好
-    finishBtn.addEventListener('click', function() {
-      // 更新 hero
-      updateHero();
-
-      // 根据用户兴趣，如果有选，自动切换到第一个兴趣标签
-      if (userInterests.length > 0) {
-        const firstInterest = userInterests[0];
-        // 激活对应 chip
-        prefChips.forEach(c => c.classList.remove('active'));
-        const targetChip = document.querySelector(`.pref-chip[data-pref="${firstInterest}"]`);
-        if (targetChip) targetChip.classList.add('active');
-        currentPref = firstInterest;
-      } else {
-        // 没有兴趣偏好，还是"全部"
-        prefChips.forEach(c => c.classList.remove('active'));
-        document.querySelector('.pref-chip[data-pref="all"]').classList.add('active');
-        currentPref = 'all';
-      }
-
-      renderActivities(currentPref);
-
-      // 更新推荐卡片标签
-      const interestCount = userInterests.length;
-      if (interestCount > 0) {
-        matchPill.textContent = '✨ 已匹配 ' + interestCount + ' 个兴趣';
-      } else {
-        matchPill.textContent = '智能匹配';
-      }
-
-      // 关闭弹窗
-      modal.classList.add('hidden');
-    });
-
-    // 跳过全部
-    skipAllBtn.addEventListener('click', function() {
-      // 重置偏好为全部
-      userInterests = [];
-      userBudget = 80;
-      userPeople = '2-4';
-      updateHero();
-
-      prefChips.forEach(c => c.classList.remove('active'));
-      document.querySelector('.pref-chip[data-pref="all"]').classList.add('active');
-      currentPref = 'all';
-      renderActivities('all');
-      matchPill.textContent = '智能匹配';
-
-      modal.classList.add('hidden');
-    });
-
-    // 点击遮罩层（可选：不关闭，防止误触丢失，这里不关闭）
-
-    // ===================== 偏好 chip 切换 =====================
-    prefChips.forEach(chip => {
-      chip.addEventListener('click', function() {
-        prefChips.forEach(c => c.classList.remove('active'));
-        this.classList.add('active');
-        const pref = this.dataset.pref;
-        currentPref = pref;
-        renderActivities(pref);
-
-        // 如果选择了具体偏好，更新匹配标签
-        if (pref !== 'all' && userInterests.length > 0 && userInterests.includes(pref)) {
-          matchPill.textContent = '✨ 兴趣匹配中';
-        } else {
-          matchPill.textContent = '智能匹配';
-        }
-      });
-    });
-
-    // ===================== 打卡 =====================
-    checkinBtn.addEventListener('click', function() {
-      checkinCount += 1;
-      checkinCountEl.textContent = checkinCount;
-      checkinCountEl.style.transform = 'scale(1.2)';
-      setTimeout(() => checkinCountEl.style.transform = 'scale(1)', 100);
-    });
-
-    // ===================== 分享攻略 =====================
-    shareGuideBtn.addEventListener('click', function() {
-      const newGuideHtml = `
-        <strong>「我的周末路线」</strong> 从老城区咖啡馆出发，途径两个展览，傍晚在江边市集吃小吃。人均不到80，适合3-4人。
-        <div class="guide-meta">
-          <span>@你 · 刚刚</span>
-          <span>❤️ 0</span>
-          <span>💬 0</span>
-        </div>
-      `;
-      guidePreview.innerHTML = newGuideHtml;
-      guidePreview.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    });
-
-    // 邀请链接
-    inviteLink.addEventListener('click', function() {
-      alert('🔗 邀请链接已生成 (演示)');
-    });
-
-    // ===================== 初始化 =====================
-    function init() {
-      // 默认渲染全部
-      renderActivities('all');
-      // 初始化预算显示
-      budgetValue.innerHTML = '¥' + userBudget + ' <small>/ 人</small>';
-      // 更新 hero
-      updateHero();
-
-      // 默认弹窗打开（overlay 没有 hidden 类，所以可见）
-      // 如果希望每次刷新都弹，保持现状；如果希望只弹一次，可用 localStorage，这里按需求每次都弹
-    }
-
-    init();
-  })();
-</script>
-</body>
-</html>
+      <div class="pill" id="matchPill
