@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
   <title>周末城市探索 · 雏形</title>
-  <!-- 干净样式，无外部依赖，方便部署 -->
   <style>
     * {
       margin: 0;
@@ -28,7 +27,286 @@
       width: 100%;
     }
 
-    /* 标题区 */
+    /* ---------- 弹窗样式 ---------- */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 25, 45, 0.45);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.2rem;
+      z-index: 999;
+      opacity: 1;
+      transition: opacity 0.25s ease;
+    }
+
+    .modal-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border-radius: 32px;
+      width: 100%;
+      max-width: 420px;
+      padding: 1.8rem 1.5rem 1.5rem;
+      box-shadow: 0 30px 60px -20px rgba(0, 20, 45, 0.35), 0 8px 24px -8px rgba(0, 0, 0, 0.1);
+      transform: translateY(0);
+      transition: transform 0.25s ease;
+      animation: modalPop 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+    }
+
+    @keyframes modalPop {
+      0% { transform: scale(0.92) translateY(10px); opacity: 0; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    .modal-step {
+      display: none;
+    }
+
+    .modal-step.active {
+      display: block;
+    }
+
+    .modal-icon {
+      font-size: 2.2rem;
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .modal-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      text-align: center;
+      color: #0a1a2b;
+      margin-bottom: 0.3rem;
+      letter-spacing: -0.01em;
+    }
+
+    .modal-sub {
+      font-size: 0.82rem;
+      text-align: center;
+      color: #5d7a97;
+      margin-bottom: 1.4rem;
+    }
+
+    .option-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .option-item {
+      background: #f4f9ff;
+      border: 1.5px solid #dde9f5;
+      border-radius: 18px;
+      padding: 0.85rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.92rem;
+      font-weight: 500;
+      color: #1d3b5a;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .option-item:hover {
+      background: #eaf3fe;
+      border-color: #b9d2ea;
+    }
+
+    .option-item.selected {
+      background: #1e3a5f;
+      border-color: #1e3a5f;
+      color: #ffffff;
+      box-shadow: 0 6px 14px -6px rgba(20, 55, 95, 0.4);
+    }
+
+    .option-item .opt-emoji {
+      font-size: 1.3rem;
+      line-height: 1;
+    }
+
+    .option-item .opt-check {
+      margin-left: auto;
+      font-size: 0.85rem;
+      opacity: 0;
+      transition: opacity 0.1s;
+    }
+
+    .option-item.selected .opt-check {
+      opacity: 1;
+    }
+
+    /* 预算滑块 */
+    .budget-slider-wrap {
+      margin: 0.6rem 0 1.2rem;
+    }
+
+    .budget-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-align: center;
+      color: #1e3a5f;
+      margin-bottom: 0.4rem;
+    }
+
+    .budget-value small {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #5d7a97;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      border-radius: 6px;
+      background: #dde9f5;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #1e3a5f;
+      cursor: pointer;
+      border: 3px solid white;
+      box-shadow: 0 2px 8px rgba(0, 30, 60, 0.3);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #1e3a5f;
+      cursor: pointer;
+      border: 3px solid white;
+    }
+
+    .budget-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      color: #7c94ab;
+      margin-top: 0.35rem;
+    }
+
+    /* 同行人数 */
+    .people-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .people-chip {
+      flex: 1;
+      text-align: center;
+      background: #f4f9ff;
+      border: 1.5px solid #dde9f5;
+      border-radius: 16px;
+      padding: 0.7rem 0.3rem;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: #1d3b5a;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .people-chip.selected {
+      background: #1e3a5f;
+      border-color: #1e3a5f;
+      color: white;
+    }
+
+    /* 弹窗底部按钮 */
+    .modal-actions {
+      display: flex;
+      gap: 0.6rem;
+      margin-top: 0.4rem;
+    }
+
+    .btn-primary {
+      flex: 1;
+      background: #1e3a5f;
+      color: white;
+      border: none;
+      border-radius: 40px;
+      padding: 0.85rem 1rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      box-shadow: 0 8px 18px -8px rgba(20, 55, 95, 0.5);
+    }
+
+    .btn-primary:hover {
+      background: #112b44;
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: none;
+      color: #5d7a97;
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 0.5rem 1rem;
+      border-radius: 40px;
+    }
+
+    .btn-ghost:hover {
+      background: #eef4fb;
+    }
+
+    .step-dots {
+      display: flex;
+      justify-content: center;
+      gap: 0.4rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #d6e2ef;
+      transition: all 0.2s;
+    }
+
+    .dot.active {
+      background: #1e3a5f;
+      width: 20px;
+      border-radius: 10px;
+    }
+
+    .skip-row {
+      text-align: center;
+      margin-top: 0.6rem;
+    }
+
+    /* ---------- 原有样式 ---------- */
     .hero {
       margin-bottom: 1.75rem;
       padding: 0.25rem 0;
@@ -75,7 +353,6 @@
       color: #1b3a5c;
     }
 
-    /* 推荐卡片 */
     .recommend-card {
       background: linear-gradient(135deg, #ffffff 0%, #f3f8ff 100%);
       border-radius: 32px;
@@ -111,7 +388,6 @@
       letter-spacing: 0.02em;
     }
 
-    /* 偏好选择器 */
     .pref-row {
       display: flex;
       flex-wrap: wrap;
@@ -148,7 +424,6 @@
       font-size: 1rem;
     }
 
-    /* 推荐活动列表 */
     .activity-list {
       display: flex;
       flex-direction: column;
@@ -255,7 +530,6 @@
       opacity: 0.9;
     }
 
-    /* 组队与打卡区域 */
     .team-section {
       margin: 1.5rem 0 1rem;
       display: grid;
@@ -314,7 +588,7 @@
       margin-top: 0.6rem;
       text-decoration: underline;
       text-underline-offset: 2px;
-      cursor: default;
+      cursor: pointer;
     }
 
     .checkin-badge {
@@ -354,7 +628,6 @@
       background: #d9e6f5;
     }
 
-    /* 攻略分享 */
     .share-section {
       background: #ffffffd9;
       backdrop-filter: blur(8px);
@@ -417,7 +690,6 @@
       margin-top: 0.4rem;
     }
 
-    /* 底部小提示 */
     .footer-note {
       text-align: center;
       font-size: 0.7rem;
@@ -427,25 +699,108 @@
       padding-top: 1.2rem;
     }
 
-    /* 加载后稍微有点动态 */
-    .activity-item,
-    .recommend-card,
-    .team-card {
-      transition: all 0.2s;
-    }
-
-    /* 响应式 */
     @media (max-width: 400px) {
       .team-section {
         grid-template-columns: 1fr;
+      }
+      .modal-card {
+        padding: 1.5rem 1.2rem 1.2rem;
       }
     }
   </style>
 </head>
 <body>
+
+<!-- ========== 偏好选择测试弹窗 ========== -->
+<div class="modal-overlay" id="prefModal">
+  <div class="modal-card">
+
+    <!-- 步骤指示器 -->
+    <div class="step-dots" id="stepDots">
+      <div class="dot active"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+
+    <!-- 第一步：兴趣偏好 -->
+    <div class="modal-step active" data-step="1">
+      <div class="modal-icon">🧭</div>
+      <div class="modal-title">你更想怎么玩？</div>
+      <div class="modal-sub">选择最符合你周末心情的标签（可多选）</div>
+
+      <div class="option-list" id="interestOptions">
+        <div class="option-item" data-value="exhibition">
+          <span class="opt-emoji">🖼️</span> 看展览 · 艺术熏陶
+          <span class="opt-check">✓</span>
+        </div>
+        <div class="option-item" data-value="market">
+          <span class="opt-emoji">🛍️</span> 逛市集 · 烟火气
+          <span class="opt-check">✓</span>
+        </div>
+        <div class="option-item" data-value="performance">
+          <span class="opt-emoji">🎭</span> 看演出 · 现场氛围
+          <span class="opt-check">✓</span>
+        </div>
+        <div class="option-item" data-value="hiking">
+          <span class="opt-emoji">🥾</span> 去徒步 · 亲近自然
+          <span class="opt-check">✓</span>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-primary" id="step1Next">下一步 · 预算</button>
+      </div>
+      <div class="skip-row">
+        <button class="btn-ghost" id="skipAllBtn">跳过测试，随便看看</button>
+      </div>
+    </div>
+
+    <!-- 第二步：预算 -->
+    <div class="modal-step" data-step="2">
+      <div class="modal-icon">💰</div>
+      <div class="modal-title">周末预算大概多少？</div>
+      <div class="modal-sub">拖动滑块选择你能接受的单人花费</div>
+
+      <div class="budget-slider-wrap">
+        <div class="budget-value" id="budgetValue">¥80 <small>/ 人</small></div>
+        <input type="range" id="budgetRange" min="0" max="300" step="10" value="80">
+        <div class="budget-labels">
+          <span>¥0</span>
+          <span>¥150</span>
+          <span>¥300+</span>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-ghost" id="step2Back">返回</button>
+        <button class="btn-primary" id="step2Next">下一步 · 同行</button>
+      </div>
+    </div>
+
+    <!-- 第三步：同行人数 -->
+    <div class="modal-step" data-step="3">
+      <div class="modal-icon">👥</div>
+      <div class="modal-title">和谁一起出发？</div>
+      <div class="modal-sub">选择大概的同行人数</div>
+
+      <div class="people-row" id="peopleRow">
+        <div class="people-chip" data-value="1">1人</div>
+        <div class="people-chip selected" data-value="2-4">2-4人</div>
+        <div class="people-chip" data-value="5+">5人+</div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-ghost" id="step3Back">返回</button>
+        <button class="btn-primary" id="finishBtn">✨ 生成我的推荐</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========== 主页面 ========== -->
 <div class="app-container">
 
-  <!-- 主标题 + 模拟天气 -->
   <div class="hero">
     <h1>
       🌆 周末探索
@@ -453,21 +808,19 @@
     </h1>
     <div class="subhead">
       <div class="weather-badge">⛅ 22°C · 多云 · 微风</div>
-      <div style="display:flex; gap:0.5rem;">
-        <span>👥 3人同行</span>
-        <span>💰 ¥0-150</span>
+      <div style="display:flex; gap:0.5rem;" id="heroPrefs">
+        <span id="heroPeople">👥 2-4人同行</span>
+        <span id="heroBudget">💰 ¥0-80</span>
       </div>
     </div>
   </div>
 
-  <!-- 推荐卡片 结合偏好、天气、预算 -->
   <div class="recommend-card">
     <div class="recommend-header">
       <h2>🎯 为你推荐</h2>
-      <div class="pill">智能匹配</div>
+      <div class="pill" id="matchPill">智能匹配</div>
     </div>
 
-    <!-- 偏好选项 (可切换) -->
     <div class="pref-row" id="prefRow">
       <div class="pref-chip active" data-pref="all"><i>✨</i> 全部</div>
       <div class="pref-chip" data-pref="exhibition"><i>🖼️</i> 展览</div>
@@ -476,13 +829,9 @@
       <div class="pref-chip" data-pref="hiking"><i>🥾</i> 徒步</div>
     </div>
 
-    <!-- 活动列表 (动态渲染) -->
-    <div class="activity-list" id="activityList">
-      <!-- 默认由 JavaScript 填充，但保留静态结构以防JS延迟 -->
-    </div>
+    <div class="activity-list" id="activityList"></div>
   </div>
 
-  <!-- 组队 & 打卡 -->
   <div class="team-section">
     <div class="team-card">
       <h3>👋 组队出发</h3>
@@ -492,7 +841,7 @@
         <div class="avatar">小B</div>
         <div class="avatar more">+2</div>
       </div>
-      <div class="invite-link" onclick="alert('邀请链接已复制 (演示)')">🔗 邀请同行好友</div>
+      <div class="invite-link" id="inviteLink">🔗 邀请同行好友</div>
     </div>
     <div class="team-card">
       <h3>📍 打卡记录</h3>
@@ -506,7 +855,6 @@
     </div>
   </div>
 
-  <!-- 攻略分享 -->
   <div class="share-section">
     <div class="share-header">
       <h3>📝 攻略分享</h3>
@@ -522,7 +870,6 @@
     </div>
   </div>
 
-  <!-- 底部说明 (保持干净) -->
   <div class="footer-note">
     根据天气·预算·偏好推荐 · 组队打卡分享<br>点击偏好切换推荐 · 雏形可迭代
   </div>
@@ -530,99 +877,69 @@
 
 <script>
   (function(){
-    // ---------- 活动数据 (模拟) ----------
+    // ===================== 活动数据 =====================
     const activities = [
-      {
-        id: 1,
-        title: '城市印象·当代艺术展',
-        type: 'exhibition',
-        icon: '🖼️',
-        budget: '¥60',
-        budgetTag: 'low',
-        weather: '室内',
-        people: '2-6人',
-        time: '本周末 10:00-18:00',
-        distance: '1.2km'
-      },
-      {
-        id: 2,
-        title: '滨江创意市集',
-        type: 'market',
-        icon: '🛍️',
-        budget: '免费',
-        budgetTag: 'free',
-        weather: '户外',
-        people: '不限',
-        time: '周六 14:00-21:00',
-        distance: '800m'
-      },
-      {
-        id: 3,
-        title: 'Livehouse 独立乐队演出',
-        type: 'performance',
-        icon: '🎭',
-        budget: '¥80',
-        budgetTag: 'low',
-        weather: '室内',
-        people: '1-4人',
-        time: '周六 20:00',
-        distance: '2.5km'
-      },
-      {
-        id: 4,
-        title: '西山轻徒步·落日线',
-        type: 'hiking',
-        icon: '🥾',
-        budget: '免费',
-        budgetTag: 'free',
-        weather: '户外',
-        people: '3-8人',
-        time: '周日 15:00',
-        distance: '5km'
-      },
-      {
-        id: 5,
-        title: '复古胶片摄影展',
-        type: 'exhibition',
-        icon: '📸',
-        budget: '¥40',
-        budgetTag: 'low',
-        weather: '室内',
-        people: '1-3人',
-        time: '本周末全天',
-        distance: '1.8km'
-      },
-      {
-        id: 6,
-        title: '农夫市集·手作烘焙',
-        type: 'market',
-        icon: '🥐',
-        budget: '¥30',
-        budgetTag: 'low',
-        weather: '户外',
-        people: '不限',
-        time: '周六 9:00-14:00',
-        distance: '1.5km'
-      }
+      { id: 1, title: '城市印象·当代艺术展', type: 'exhibition', icon: '🖼️', budget: '¥60', budgetNum: 60, budgetTag: 'low', weather: '室内', people: '2-6人', time: '本周末 10:00-18:00', distance: '1.2km' },
+      { id: 2, title: '滨江创意市集', type: 'market', icon: '🛍️', budget: '免费', budgetNum: 0, budgetTag: 'free', weather: '户外', people: '不限', time: '周六 14:00-21:00', distance: '800m' },
+      { id: 3, title: 'Livehouse 独立乐队演出', type: 'performance', icon: '🎭', budget: '¥80', budgetNum: 80, budgetTag: 'low', weather: '室内', people: '1-4人', time: '周六 20:00', distance: '2.5km' },
+      { id: 4, title: '西山轻徒步·落日线', type: 'hiking', icon: '🥾', budget: '免费', budgetNum: 0, budgetTag: 'free', weather: '户外', people: '3-8人', time: '周日 15:00', distance: '5km' },
+      { id: 5, title: '复古胶片摄影展', type: 'exhibition', icon: '📸', budget: '¥40', budgetNum: 40, budgetTag: 'low', weather: '室内', people: '1-3人', time: '本周末全天', distance: '1.8km' },
+      { id: 6, title: '农夫市集·手作烘焙', type: 'market', icon: '🥐', budget: '¥30', budgetNum: 30, budgetTag: 'low', weather: '户外', people: '不限', time: '周六 9:00-14:00', distance: '1.5km' },
+      { id: 7, title: '露天电影之夜', type: 'performance', icon: '🎬', budget: '免费', budgetNum: 0, budgetTag: 'free', weather: '户外', people: '2-8人', time: '周六 19:30', distance: '2.2km' },
+      { id: 8, title: '老城巷子·城市漫步', type: 'hiking', icon: '🚶', budget: '免费', budgetNum: 0, budgetTag: 'free', weather: '户外', people: '1-6人', time: '周日 9:00', distance: '3km' }
     ];
 
-    // DOM 元素
+    // ===================== DOM 引用 =====================
     const activityListEl = document.getElementById('activityList');
     const prefChips = document.querySelectorAll('.pref-chip');
     const checkinCountEl = document.getElementById('checkinCount');
     const checkinBtn = document.getElementById('checkinBtn');
     const shareGuideBtn = document.getElementById('shareGuideBtn');
     const guidePreview = document.getElementById('guidePreview');
+    const heroPeople = document.getElementById('heroPeople');
+    const heroBudget = document.getElementById('heroBudget');
+    const matchPill = document.getElementById('matchPill');
+    const inviteLink = document.getElementById('inviteLink');
 
-    // 状态
+    // 弹窗引用
+    const modal = document.getElementById('prefModal');
+    const stepDots = document.querySelectorAll('.dot');
+    const step1 = document.querySelector('.modal-step[data-step="1"]');
+    const step2 = document.querySelector('.modal-step[data-step="2"]');
+    const step3 = document.querySelector('.modal-step[data-step="3"]');
+    const interestOptions = document.querySelectorAll('#interestOptions .option-item');
+    const budgetRange = document.getElementById('budgetRange');
+    const budgetValue = document.getElementById('budgetValue');
+    const peopleChips = document.querySelectorAll('#peopleRow .people-chip');
+    const step1Next = document.getElementById('step1Next');
+    const step2Back = document.getElementById('step2Back');
+    const step2Next = document.getElementById('step2Next');
+    const step3Back = document.getElementById('step3Back');
+    const finishBtn = document.getElementById('finishBtn');
+    const skipAllBtn = document.getElementById('skipAllBtn');
+
+    // ===================== 状态 =====================
     let currentPref = 'all';
     let checkinCount = 7;
+    let userInterests = [];   // 多选
+    let userBudget = 80;
+    let userPeople = '2-4';
 
-    // 辅助函数：渲染活动列表
+    // ===================== 通用：渲染活动 =====================
     function renderActivities(pref) {
       let filtered = activities;
       if (pref !== 'all') {
         filtered = activities.filter(a => a.type === pref);
+      }
+
+      // 如果有用户兴趣偏好（来自弹窗）且当前是"全部"，优先展示匹配兴趣的
+      if (userInterests.length > 0 && pref === 'all') {
+        const matched = activities.filter(a => userInterests.includes(a.type));
+        if (matched.length > 0) {
+          // 兴趣匹配的排前面，其余排后面
+          const others = activities.filter(a => !userInterests.includes(a.type));
+          filtered = [...matched, ...others];
+        }
       }
 
       if (filtered.length === 0) {
@@ -630,14 +947,15 @@
         return;
       }
 
-      // 根据天气隐含逻辑：如果天气多云微风，我们可以给户外活动稍高排序（但这里简单渲染，展示设计细节）
-      // 同时体现「结合天气」：可以显示天气标签
       let html = '';
       filtered.forEach(act => {
-        // 预算标签样式
         let budgetClass = 'budget-tag';
         if (act.budget === '免费') budgetClass += ' free';
-        else if (act.budget === '¥60' || act.budget === '¥40' || act.budget === '¥30') budgetClass += ' low';
+        else budgetClass += ' low';
+
+        // 是否命中用户兴趣
+        const isMatched = userInterests.includes(act.type);
+        const matchBadge = isMatched ? '<span style="background:#e1f0e8;color:#146b3a;border-radius:30px;padding:0.1rem 0.5rem;font-size:0.65rem;font-weight:600;">✨ 兴趣匹配</span>' : '';
 
         html += `
           <div class="activity-item">
@@ -645,6 +963,7 @@
             <div class="activity-info">
               <div class="activity-title">
                 ${act.title}
+                ${matchBadge}
                 <span class="${budgetClass}">${act.budget}</span>
               </div>
               <div class="activity-meta">
@@ -660,43 +979,170 @@
       });
       activityListEl.innerHTML = html;
 
-      // 为每个“组队”按钮添加事件 (可变成已加入)
       document.querySelectorAll('.join-btn').forEach(btn => {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
           if (this.classList.contains('joined')) return;
           this.classList.add('joined');
           this.innerHTML = '✅ 已组队';
-          // 可选反馈
         });
       });
     }
 
-    // 初始化渲染
-    renderActivities(currentPref);
+    // ===================== 更新 Hero 区域显示 =====================
+    function updateHero() {
+      if (userPeople === '1') heroPeople.textContent = '👥 1人出发';
+      else if (userPeople === '2-4') heroPeople.textContent = '👥 2-4人同行';
+      else heroPeople.textContent = '👥 5人以上';
 
-    // 偏好切换
+      // 预算显示
+      if (userBudget >= 300) heroBudget.textContent = '💰 ¥300+';
+      else heroBudget.textContent = '💰 ¥0-' + userBudget;
+    }
+
+    // ===================== 弹窗步骤控制 =====================
+    function goToStep(step) {
+      step1.classList.remove('active');
+      step2.classList.remove('active');
+      step3.classList.remove('active');
+      stepDots.forEach((d, i) => d.classList.toggle('active', i === step - 1));
+
+      if (step === 1) step1.classList.add('active');
+      if (step === 2) step2.classList.add('active');
+      if (step === 3) step3.classList.add('active');
+    }
+
+    // 第一步：兴趣多选
+    interestOptions.forEach(opt => {
+      opt.addEventListener('click', function() {
+        this.classList.toggle('selected');
+        const val = this.dataset.value;
+        if (userInterests.includes(val)) {
+          userInterests = userInterests.filter(v => v !== val);
+        } else {
+          userInterests.push(val);
+        }
+      });
+    });
+
+    // 第一步下一步
+    step1Next.addEventListener('click', function() {
+      goToStep(2);
+    });
+
+    // 第二步：预算滑块
+    budgetRange.addEventListener('input', function() {
+      userBudget = parseInt(this.value);
+      if (userBudget >= 300) {
+        budgetValue.innerHTML = '¥300+ <small>/ 人</small>';
+      } else {
+        budgetValue.innerHTML = '¥' + userBudget + ' <small>/ 人</small>';
+      }
+    });
+
+    step2Back.addEventListener('click', function() {
+      goToStep(1);
+    });
+
+    step2Next.addEventListener('click', function() {
+      // 读取预算当前值
+      userBudget = parseInt(budgetRange.value);
+      goToStep(3);
+    });
+
+    // 第三步：人数单选
+    peopleChips.forEach(chip => {
+      chip.addEventListener('click', function() {
+        peopleChips.forEach(c => c.classList.remove('selected'));
+        this.classList.add('selected');
+        userPeople = this.dataset.value;
+      });
+    });
+
+    step3Back.addEventListener('click', function() {
+      goToStep(2);
+    });
+
+    // 完成 -> 关闭弹窗，应用偏好
+    finishBtn.addEventListener('click', function() {
+      // 更新 hero
+      updateHero();
+
+      // 根据用户兴趣，如果有选，自动切换到第一个兴趣标签
+      if (userInterests.length > 0) {
+        const firstInterest = userInterests[0];
+        // 激活对应 chip
+        prefChips.forEach(c => c.classList.remove('active'));
+        const targetChip = document.querySelector(`.pref-chip[data-pref="${firstInterest}"]`);
+        if (targetChip) targetChip.classList.add('active');
+        currentPref = firstInterest;
+      } else {
+        // 没有兴趣偏好，还是"全部"
+        prefChips.forEach(c => c.classList.remove('active'));
+        document.querySelector('.pref-chip[data-pref="all"]').classList.add('active');
+        currentPref = 'all';
+      }
+
+      renderActivities(currentPref);
+
+      // 更新推荐卡片标签
+      const interestCount = userInterests.length;
+      if (interestCount > 0) {
+        matchPill.textContent = '✨ 已匹配 ' + interestCount + ' 个兴趣';
+      } else {
+        matchPill.textContent = '智能匹配';
+      }
+
+      // 关闭弹窗
+      modal.classList.add('hidden');
+    });
+
+    // 跳过全部
+    skipAllBtn.addEventListener('click', function() {
+      // 重置偏好为全部
+      userInterests = [];
+      userBudget = 80;
+      userPeople = '2-4';
+      updateHero();
+
+      prefChips.forEach(c => c.classList.remove('active'));
+      document.querySelector('.pref-chip[data-pref="all"]').classList.add('active');
+      currentPref = 'all';
+      renderActivities('all');
+      matchPill.textContent = '智能匹配';
+
+      modal.classList.add('hidden');
+    });
+
+    // 点击遮罩层（可选：不关闭，防止误触丢失，这里不关闭）
+
+    // ===================== 偏好 chip 切换 =====================
     prefChips.forEach(chip => {
       chip.addEventListener('click', function() {
-        // 移除所有 active
         prefChips.forEach(c => c.classList.remove('active'));
         this.classList.add('active');
         const pref = this.dataset.pref;
         currentPref = pref;
         renderActivities(pref);
+
+        // 如果选择了具体偏好，更新匹配标签
+        if (pref !== 'all' && userInterests.length > 0 && userInterests.includes(pref)) {
+          matchPill.textContent = '✨ 兴趣匹配中';
+        } else {
+          matchPill.textContent = '智能匹配';
+        }
       });
     });
 
-    // 打卡计数
+    // ===================== 打卡 =====================
     checkinBtn.addEventListener('click', function() {
       checkinCount += 1;
       checkinCountEl.textContent = checkinCount;
-      // 加一点动画
       checkinCountEl.style.transform = 'scale(1.2)';
       setTimeout(() => checkinCountEl.style.transform = 'scale(1)', 100);
     });
 
-    // 分享攻略 (点击后替换预览内容, 演示「攻略分享」)
+    // ===================== 分享攻略 =====================
     shareGuideBtn.addEventListener('click', function() {
       const newGuideHtml = `
         <strong>「我的周末路线」</strong> 从老城区咖啡馆出发，途径两个展览，傍晚在江边市集吃小吃。人均不到80，适合3-4人。
@@ -707,90 +1153,28 @@
         </div>
       `;
       guidePreview.innerHTML = newGuideHtml;
-      // 可提示
+      guidePreview.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     });
 
-    // 额外：为分享区域加入一点互动感（点击攻略条目可以看简单演示）
-    guidePreview.addEventListener('click', function() {
-      // 演示仅提醒，不干扰主要功能
-      // alert('攻略详情页开发中，当前为雏形预览');  // 静默不弹窗，免得烦人
-    });
-
-    // 组队邀请链接简单演示
-    window.inviteTeam = function() {
-      alert('邀请链接已复制到剪贴板 (演示)');
-    };
-
-    // 注意：因为邀请链接用的是内联onclick, 但我们已经定义函数, 不过为了干净, 可以改成监听
-    // 但这里不用改，内联onclick绑定 window 函数 
-    // 我们把函数挂载到window
-    window.inviteTeam = function() {
+    // 邀请链接
+    inviteLink.addEventListener('click', function() {
       alert('🔗 邀请链接已生成 (演示)');
-    };
+    });
 
-    // 同时修复内联onclick 会调用window.inviteTeam，需要把html里的onclick改为inviteTeam()
-    // 但是原先是 alert ，为了更好的体验，直接改写一下。
-    // 找到那个invite-link元素替换事件
-    const inviteLink = document.querySelector('.invite-link');
-    if (inviteLink) {
-      inviteLink.onclick = function(e) {
-        e.preventDefault();
-        alert('🔗 邀请链接已生成 (演示)');
-      };
+    // ===================== 初始化 =====================
+    function init() {
+      // 默认渲染全部
+      renderActivities('all');
+      // 初始化预算显示
+      budgetValue.innerHTML = '¥' + userBudget + ' <small>/ 人</small>';
+      // 更新 hero
+      updateHero();
+
+      // 默认弹窗打开（overlay 没有 hidden 类，所以可见）
+      // 如果希望每次刷新都弹，保持现状；如果希望只弹一次，可用 localStorage，这里按需求每次都弹
     }
 
-    // 初始打卡数字已经显示7
-    // 组队按钮已经是动态绑定；但如果静态，已处理
-    // 动态渲染后需要重新绑定?? 我们的renderActivities 内部已经绑定了
-
-    // 额外细节：模拟天气影响推荐——其实可以在推荐卡片上稍作展示
-    // 这里我们可以在活动列表上方加个提示，但算了，避免太乱
-
-    // 但是小组卡片里的 "+2" 显示了；但点组队按钮不会更新团队人数，那也合理，暂时不改
-
-    // 点击 "+ 发布攻略" 我们替换了预览，也可以追加而不是替换? 演示下追加效果?
-    // 实际上 替换更干净。但也可以保留两条记录，但为了简洁 就替换。
-    // 再改一下 shareGuideBtn 添加一个追加的逻辑？不用太复杂，替换即可。
-    // 但有些人希望保留原攻略，为了更像分享，我们改成在开头插入新攻略
-    // 改进：保留原有预览，但是上面加一条
-    // 为了不丢失原有预览，我们用一个变量存最初的html
-    const originalGuideHTML = guidePreview.innerHTML;
-    // 重新定义shareGuideBtn事件
-    shareGuideBtn.onclick = function() {
-      // 新攻略
-      const newGuide = `
-        <strong>「我的周末路线」</strong> 从老城区咖啡馆出发，途径两个展览，傍晚在江边市集吃小吃。人均不到80，适合3-4人。
-        <div class="guide-meta">
-          <span>@你 · 刚刚</span>
-          <span>❤️ 0</span>
-          <span>💬 0</span>
-        </div>
-      `;
-      // 在预览区域最前面插入新的攻略，并保留一条原有的（或者全部替换？为了简洁，使用全部替换更干净，但那样就不像追加了）
-      // 这里我们做成“追加”效果，但只展示一条(最新)，把之前的挤掉？为了视觉简洁，采用替换为最新的，因为展示区只有一块。
-      // 但是为了更丰富，我们可以做两条？不做了，保持简单。
-      // 使用替换：
-      guidePreview.innerHTML = newGuide;
-      // 同时可以滚动到顶部
-      guidePreview.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    };
-
-    // 另外，点击组队按钮后也可以有一些反馈，已经做了
-
-    // 控制打卡数字不要太大
-    // 已处理
-
-    // 最后：把动态初始化做好
-    // 为偏好切换时如果已经加入了组队，重新渲染会重置按钮状态, 这是可接受的（演示）
-
-    // 同时确保初始时组队按钮绑定事件
-    // renderActivities 里面绑定
-
-    // 为了使它像“雏形链接”部署后自动运行，都放在自执行函数里
-
-    // 还有一个天气影响的细节：可以在选择徒步时优先展示？不用，现在也可以。
-
-    // 邀请链接已经重新绑定了
+    init();
   })();
 </script>
 </body>
